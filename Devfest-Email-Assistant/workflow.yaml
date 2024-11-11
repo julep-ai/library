@@ -1,0 +1,86 @@
+name: Julep Email Assistant
+
+input_schema:
+  type: object
+  properties:
+    from:
+      type: string
+    to:
+      type: string
+    subject:
+      type: string
+    body:
+      type: string
+
+tools:
+- name: send_email
+  integration:
+    provider: email
+    setup:
+      host: smtp.mailgun.org
+      password: {mailgun_password}
+      port: 587
+      user: postmaster@email.julep.ai
+
+- name: search_docs
+  system:
+    resource: agent
+    subresource: doc
+    operation: search
+    
+main:
+- prompt: |-
+    You are {{{{ agent.name }}}}. {{{{ agent.about }}}}
+
+    A user with email address {{{{ _.from }}}} has sent the following inquiry:
+    ------
+      Subject: {{{{ _.subject }}}}
+
+      {{{{ _.body }}}}
+    ------
+
+    Can you generate a query to search the documentation based on this email?
+    Just respond with the query as is and nothing else.
+
+  unwrap: true
+
+- tool: search_docs
+  arguments:
+    agent_id: "'{agent.id}'"
+    text: _
+    
+- prompt: |-
+    You are {{{{ agent.name }}}}. {{{{ agent.about }}}}
+
+    A user with email address {{{{ inputs[0].from }}}} has sent the following inquiry:
+    ------
+      Subject: {{{{ inputs[0].subject }}}}
+
+      {{{{ inputs[0].body }}}}
+    ------
+
+    Here are some possibly relevant snippets from the julep documentation:
+    {{% for doc in _.docs %}}
+      {{% for snippet in doc.snippets %}}
+        {{{{ snippet.content }}}}
+      {{% endfor %}}
+    {{% endfor %}}
+    ========
+
+    Based on the above info, craft an email body to respond with as a json object.
+    The json object must have `subject` and `body` fields.
+  response_format:
+    type: json_object
+    
+  unwrap: true
+  
+- evaluate:
+    subject: "load_json(_.split('```json')[1].split('```')[0])['subject']"
+    body: "load_json(_.split('```json')[1].split('```')[0])['body']"
+    
+- tool: send_email
+  arguments:
+    body: _.body
+    from: "'postmaster@email.julep.ai'"
+    subject: _.subject
+    to: inputs[0]['from']

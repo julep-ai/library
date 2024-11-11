@@ -1,0 +1,21 @@
+name: Sarcasm Headline Generator
+
+tools:
+- name: brave_search
+  type: integration
+  integration:
+    provider: brave
+    setup:
+      api_key: "YOUR_BRAVE_API_KEY"
+
+main:
+- tool: brave_search
+  arguments:
+    query: "_.topic + ' funny'"
+
+- prompt:
+  - role: system
+    content: >-
+      You are a sarcastic news headline writer. Generate a witty and sarcastic headline
+      for the topic {{inputs[0].topic}}. Use the following information for context: {{_}}
+  unwrap: true

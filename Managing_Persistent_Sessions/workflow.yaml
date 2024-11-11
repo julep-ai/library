@@ -1,0 +1,32 @@
+name: Manage User Context
+
+input_schema:
+  type: object
+  properties:
+    user_input:
+      type: string
+    session_context:
+      type: object
+
+main:
+- prompt:
+  - role: system
+    content: >-
+      You are a session management agent. Your task is to maintain context
+      across user interactions. Here's the current context: {{inputs[0].session_context}}
+      
+      User input: {{inputs[0].user_input}}
+      
+      Respond to the user and update the context with any new relevant information.
+  unwrap: true
+                          
+- evaluate:
+    session_context: >-
+      {
+        **inputs[0].session_context, 
+       'last_interaction': inputs[0].user_input,
+       'agent_response': _}                          
+
+- return: 
+    response: _
+    context: outputs[1].session_context

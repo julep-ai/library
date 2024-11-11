@@ -1,0 +1,56 @@
+name: Tourist Plan With Weather And Attractions
+
+input_schema:
+  type: object
+  properties:
+    locations:
+      type: array
+      items:
+        type: string
+      description: The locations to search for.
+
+tools:
+- name: wikipedia
+  type: integration
+  integration:
+    provider: wikipedia
+
+- name: weather
+  type: integration
+  integration:
+    provider: weather
+    setup:
+      openweathermap_api_key: "YOUR_API_KEY"
+
+main:
+- over: inputs[0].locations
+  map:
+    tool: weather
+    arguments:
+      location: _
+
+- over: inputs[0].locations
+  map:
+    tool: wikipedia
+    arguments:
+      query: "_ + ' tourist attractions'"
+
+- evaluate:
+    zipped: "list(zip(inputs[0].locations, [output['result'] for output in outputs[0]], [output['documents'][0]['page_content'] for output in outputs[1]]))"  # [(location, weather, attractions)]
+
+- over: _['zipped']
+  parallelism: 3
+  map:
+    prompt:
+    - role: system
+      content: >-
+        You are a travel assistant. Your task is to create a detailed itinerary for visiting tourist attractions in "{{_[0]}}" based on the weather conditions and the top tourist attractions provided.
+        
+        Current weather condition at "{{_[0]}}":
+        "{{_[1]}}"
+
+        Top tourist attractions in "{{_[0]}}":
+        "{{_[2]}}"
+
+        Suggest outdoor or indoor activities based on the above information.
+    unwrap: true
