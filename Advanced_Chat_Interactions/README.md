@@ -1,3 +1,3 @@
-# Advanced_Chat_Interactions
+# Advanced Chat Interactions Workflow
 
-This directory contains the workflow for Advanced_Chat_Interactions.
+This directory contains the workflow for Advanced Chat Interactions.
