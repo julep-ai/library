@@ -1,1 +1,1 @@
-entrypoint: workflow.yaml
+entrypoint = “workflow.yaml”
