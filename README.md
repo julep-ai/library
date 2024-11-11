@@ -11,26 +11,28 @@ Welcome to the **Julep AI Workflow Library**! This directory contains a collecti
 | **Workflow Name** | **Description** |
 |------------------|-----------------|
 | Advanced Chat Interactions | Workflow for handling complex chat interactions |
-| Designing Multi-Step Tasks | Framework for creating multi-step task workflows |
+| Designing Multi-Step Tasks | Workflow for creating multi-step task workflows |
 | Devfest Email Assistant | Email assistance workflow for Devfest events |
 | Document Management and Search | System for managing and searching documents |
 | Hello World | Simple demonstration workflow that logs "Hello World" |
 | Hook Generator Trending Reels | Generator for trending social media hook content |
-| Integrating External Tools and APIs | Framework for external tool and API integration |
-| Inventory Check | System for inventory management and checking |
+| Integrating External Tools and APIs | Workflow for external tool and API integration |
+| Inventory Check | Prompt for inventory management and checking |
 | Log Expense | Workflow for expense logging and tracking |
-| Managing Persistent Sessions | System for handling persistent session management |
+| Managing Persistent Sessions | Prompt for handling persistent session management |
 | Order Placement | Workflow for processing and managing orders |
-| Payment Processing | System for handling payment transactions |
+| Payment Processing | Prompt for handling payment transactions |
 | Sarcastic News Headline Generator | Creates witty and sarcastic news headlines |
 | Schedule Webinar | Workflow for webinar scheduling and management |
-| Send Follow-Up | System for automated follow-up communications |
+| Send Follow-Up | Prompt for automated follow-up communications |
 | Send Reminder | Workflow for automated reminder systems |
-| Set Budget | System for budget setting and management |
+| Set Budget | Prompt for budget setting and management |
 | Smart Researcher With WebSearch | Advanced research workflow with web search capabilities |
 | Trip Planner With Weather And WikiInfo | Comprehensive trip planning system |
-| User Management and Personalization | Framework for user management and customization |
+| User Management and Personalization | Workflow for user management and customization |
 | Website Crawler using Spider | Web crawling and content extraction system |
+| Generate User Persona | Workflow for generating user personas from user docs |
+| News Recommender | Workflow for recommending news articles to users |
 
 ## Getting Started
 
