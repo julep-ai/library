@@ -1,0 +1,40 @@
+name: Research Assistant to find Wikipedia Keywords
+
+input_schema:
+  type: object
+  properties:
+    topics:
+      type: array
+      items:
+        type: string
+      description: The topics to search for.
+
+tools:
+- name: brave_search
+  type: integration
+  integration:
+    provider: brave
+    setup:
+      api_key: "YOUR_API_KEY"
+
+main:
+- over: _.topics
+  map:
+    tool: brave_search
+    arguments:
+      query: "'the latest news about ' + _"
+
+- over: _
+  parallelism: 2
+  map:
+    prompt:
+    - role: system
+      content: >-
+        You are a research assistant.
+        I need you to do in-depth research on topics trending in the news currently.
+        Based on the following latest html news snippet, come up with a list of wikipedia keywords to search:
+        "{{_}}"
+        Your response should be a list of keywords, separated by commas. Do not add any other text.
+        Example: `KEYWORDS: keyword1, keyword2, keyword3`
+
+    unwrap: true

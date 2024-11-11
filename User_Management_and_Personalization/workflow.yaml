@@ -1,0 +1,63 @@
+name: User Registration and Profile Recommendation
+
+input_schema:
+  type: object
+  properties:
+    username:
+      type: string
+    interests:
+      type: array
+      items:
+        type: string
+    user_profile:
+      type: object
+      description: User's profile containing their interests and preferences.
+    content_list:
+      type: array
+      description: List of available content to recommend from.
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          title:
+            type: string
+          category:
+            type: string
+
+main:
+- prompt:
+  - role: system
+    content: >-
+      You are a user registration assistant. Create a user profile based on the following information:
+      Username: {{inputs[0].username}}
+      Interests: {{inputs[0].interests}}
+      
+      Generate a brief bio and suggest some initial content preferences based on the user's interests.
+  unwrap: true
+
+- evaluate:
+    username: inputs[0].username
+    interests: inputs[0].interests
+    bio: _.split('\\n')[0]
+    content_preferences: _.split('\\n')[1]
+
+- return: 
+    profile: _
+
+- prompt:
+  - role: system
+    content: >-
+      You are a content recommendation system. Based on the user's profile and the available content,
+      recommend 3 pieces of content that best match the user's interests and preferences.
+
+      User Profile:
+      {{inputs[0].user_profile}}
+
+      Available Content:
+      {{inputs[0].content_list}}
+
+      Provide your recommendations in the following format:
+      1. [Content ID] - [Content Title] - Reason for recommendation
+      2. [Content ID] - [Content Title] - Reason for recommendation
+      3. [Content ID] - [Content Title] - Reason for recommendation

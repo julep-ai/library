@@ -1,0 +1,105 @@
+name: Trending Reels Hook Generator
+
+tools:
+- name: api_tool_call
+  type: api_call
+  api_call:
+    method: GET
+    url: "https://instagram-scraper-api3.p.rapidapi.com/reels_by_keyword"
+    headers:
+      x-rapidapi-key: "{RAPID_API_KEY}"
+      x-rapidapi-host: "{RAPID_API_HOST}"
+    follow_redirects: true
+
+- name: get_hooks_doc
+  type: system
+  system:
+    resource: agent
+    subresource: doc
+    operation: list
+
+main:
+
+- tool: api_tool_call
+  arguments:
+    params:
+      query: "inputs[0].topic"
+
+- evaluate:
+    summary: "list({{
+              'caption': ((clip.get('media') or {{}}).get('caption') or {{}}).get('text') or 'No Caption Available',
+              'code': (clip.get('media') or {{}}).get('code') or 'No Code Available',
+              'media_id': ((clip.get('media') or {{}}).get('caption') or {{}}).get('media_id', 0),
+              'video_duration': (clip.get('media') or {{}}).get('video_duration', 0),
+              'thumbnail_url': (clip.get('media') or {{}}).get('image_versions2', {{}}).get('candidates', [{{}}])[0].get('url') or 'No Thumbnail URL Available',
+              'video_url_360': [video.get('url') for video in (clip.get('media') or {{}}).get('video_versions', [{{}}]) if video.get('width') == 360][0] if [video.get('url') for video in (clip.get('media') or {{}}).get('video_versions', [{{}}]) if video.get('width') == 360] else 'No URL Available',
+              'video_url_720': [video.get('url') for video in (clip.get('media') or {{}}).get('video_versions', [{{}}]) if video.get('width') == 720][0] if [video.get('url') for video in (clip.get('media') or {{}}).get('video_versions', [{{}}]) if video.get('width') == 720] else 'No URL Available',
+              'play_count': (clip.get('media') or {{}}).get('play_count', 0),
+              'like_count': (clip.get('media') or {{}}).get('like_count', 0),
+              'comment_count': (clip.get('media') or {{}}).get('comment_count', 0),
+              'reshare_count': (clip.get('media') or {{}}).get('reshare_count', 0),
+              'has_audio': (clip.get('media') or {{}}).get('has_audio', False),
+              'audio_type': (clip.get('media') or {{}}).get('clips_metadata', {{}}).get('audio_type', 'No Audio Type Available'),
+              'username': (clip.get('media') or {{}}).get('user', {{}}).get('username') or 'No Username Available',
+              'full_name': (clip.get('media') or {{}}).get('user', {{}}).get('full_name') or 'No Full Name Available',
+              'profile_pic_url': (clip.get('media') or {{}}).get('user', {{}}).get('profile_pic_url') or 'No Profile Pic URL Available',
+              'virality_score': (clip.get('media') or {{}}).get('reshare_count', 0) / ((clip.get('media') or {{}}).get('play_count', 1) if (clip.get('media') or {{}}).get('play_count', 0) > 0 else 1),
+              'engagement_score': (clip.get('media') or {{}}).get('like_count', 0) / ((clip.get('media') or {{}}).get('play_count', 1) if (clip.get('media') or {{}}).get('play_count', 0) > 0 else 1)
+              }} for clip in _['json']['data']['reels_serp_modules'][0]['clips'])"
+
+- over: _['summary']
+  parallelism: 4
+  map:
+    prompt:
+      - role: system
+        content: >-
+          You are a skilled agent tasked with creating a single description for each trending real estate reel for the given topic: {{{{inputs[0].topic}}}}.
+          Use information gathered from the following data sources to gather the most relevant information:
+
+          Search Results: {{{{_['caption']}}}}
+          Virality Score: {{{{_['virality_score']}}}}
+          Engagement Score: {{{{_['engagement_score']}}}}
+
+          Provide a json repsonse containing the caption, virality score, enagement score and one-liner description for the reel.
+    unwrap: true   
+
+- evaluate:
+    summary: outputs[1]['summary']
+    description: list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
+
+- tool: get_hooks_doc
+  arguments:
+    agent_id: "'{AGENT_UUID}'"
+                          
+- evaluate:
+    hooks_doc: _[0]['content']
+
+- over: outputs[3]['description']
+  parallelism: 4
+  map:
+    prompt:
+      - role: system
+        content: >-
+          You are a skilled content creator tasked with generating 3 engaging video hooks for each reel having its description and caption. Use the following document containing hook templates to create effective hooks:
+          
+          {{{{_.hooks_doc}}}}
+          
+          Here are the caption and description to create hooks for:
+
+          Caption: {{{{_['caption']}}}}
+          Description: {{{{_['description']}}}}
+          Virality Score: {{{{_['virality_score']}}}}
+          Engagement Score: {{{{_['engagement_score']}}}}
+
+          Your task is to generate 3 hooks (for the reel) by adapting the most suitable templates from the document. Each hook should be no more than 1 sentence long and directly relate to its corresponding idea.
+          
+          Basically, all the ideas are taken from a search about this topic, which is {{{{inputs[0].topic}}}}. You should focus on this while writing the hooks.
+
+          Ensure that each hook is creative, engaging, and relevant to its idea while following the structure of the chosen template.
+
+          Provide a json repsonse containing the caption, virality score, enagement score, description and the list of 3 hooks for the reel.
+    unwrap: true
+
+- evaluate:
+    summary: outputs[3]['summary']
+    hooks: list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
