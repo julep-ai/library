@@ -1,5 +1,7 @@
 <div align="center">
-    <img src="https://socialify.git.ci/julep-ai/julep/image?description=1&descriptionEditable=Build%20AI%20agents%20and%20workflows%20with%20a%20simple%20API&font=Source%20Code%20Pro&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fjulep-ai%2Fjulep%2Fdev%2F.github%2Fjulep-logo.svg&owner=1&pattern=Solid&stargazers=1&theme=Auto" alt="julep" width="640" height="320" />
+
+![Julep](https://socialify.git.ci/julep-ai/julep/image?description=1&descriptionEditable=Build%20AI%20agents%20and%20workflows%20with%20a%20simple%20API&font=Source%20Code%20Pro&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fjulep-ai%2Fjulep%2Fdev%2F.github%2Fjulep-logo.svg&owner=1&pattern=Solid&stargazers=1&theme=Auto)
+
 </div>
 
 # Julep AI - Workflow Library
@@ -37,11 +39,13 @@ Welcome to the **Julep AI Workflow Library**! This directory contains a collecti
 ## Getting Started
 
 Each workflow in this library comes with its own directory containing:
+
 - A README.md file with specific workflow details
 - A `julep.toml` configuration file
 - Necessary workflow definition files
 
 To use a workflow:
+
 1. Navigate to the specific workflow directory
 2. Review the README.md for workflow-specific information
 3. Use the workflow.yaml file specified in the julep.toml as the entrypoint
@@ -49,6 +53,7 @@ To use a workflow:
 ## Contributing
 
 We welcome contributions to expand our workflow library. When contributing:
+
 1. Create a new directory for your workflow
 2. Include a clear README.md explaining the workflow's purpose and usage
 3. Provide a julep.toml file with the correct entrypoint

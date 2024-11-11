@@ -1,3 +1,13 @@
 # Hello World Workflow
 
-Doesn't do anything fancy, just logs "Hello World".
+This workflow demonstrates basic workflow functionality.
+
+## Workflow Details
+
+- **Main Steps**:
+  1. Simple Logging
+     - Log "Hello World" message
+
+## Usage
+
+Useful for testing and demonstrating basic workflow execution.
