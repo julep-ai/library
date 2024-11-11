@@ -1,0 +1,28 @@
+name: Send Follow-Up
+
+input_schema:
+  type: object
+  properties:
+    event_id:
+      type: string
+    participants:
+      type: array
+      items:
+        type: string
+    follow_up_message:
+      type: string
+
+main:
+- prompt:
+  - role: system
+    content: >-
+      You are a follow-up assistant. Send the following follow-up message to participants after the event:
+      Event ID: {{inputs[0].event_id}}
+      Participants: {{inputs[0].participants}}
+      Message: {{inputs[0].follow_up_message}}
+
+      Confirm the message has been sent.
+  unwrap: true
+
+- return:
+    status: "Follow-up message sent"

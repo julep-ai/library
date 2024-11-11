@@ -1,0 +1,25 @@
+name: Send Reminder
+
+input_schema:
+  type: object
+  properties:
+    event_id:
+      type: string
+    participants:
+      type: array
+      items:
+        type: string
+
+main:
+- prompt:
+  - role: system
+    content: >-
+      You are a reminder assistant. Send a reminder for the following event:
+      Event ID: {{inputs[0].event_id}}
+      Participants: {{inputs[0].participants}}
+
+      Confirm the reminder has been sent.
+  unwrap: true
+
+- return:
+    status: "Reminder sent"

@@ -1,3 +1,3 @@
-# Document_Management_and_Search
+# Document Management and Search Workflow
 
-This directory contains the workflow for Document_Management_and_Search.
+This directory contains the workflow for Document Management and Search.

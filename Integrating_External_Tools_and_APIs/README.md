@@ -1,3 +1,3 @@
-# Integrating_External_Tools_and_APIs
+# Integrating External Tools and APIs Workflow
 
-This directory contains the workflow for Integrating_External_Tools_and_APIs.
+This directory contains the workflow for Integrating External Tools and APIs.

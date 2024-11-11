@@ -1,0 +1,24 @@
+name: Set Budget
+
+input_schema:
+  type: object
+  properties:
+    category:
+      type: string
+    budget_amount:
+      type: number
+
+tools:
+- name: finance_tool
+  system:
+    resource: agent
+    subresource: tool
+    operation: create
+
+main:
+- tool: finance_tool
+  arguments:
+    agent_id: "'{agent.id}'"
+    data:
+      category: inputs[0].category
+      budget_amount: inputs[0].budget_amount

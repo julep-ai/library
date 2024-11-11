@@ -1,3 +1,0 @@
-g_expense_task_def = yaml.safe_load(f"""
-set_budget_task_def = yaml.safe_load(f"""
-send_advice_task_def = 

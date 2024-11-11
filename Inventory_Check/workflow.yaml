@@ -1,0 +1,20 @@
+name: Inventory Check
+
+input_schema:
+  type: object
+  properties:
+    item_id:
+      type: integer
+    quantity:
+      type: integer
+
+main:
+- prompt:
+  - role: system
+    content: >-
+      You are an inventory checker. Check the availability of the following item:
+      Item ID: {{inputs[0].item_id}}
+      Quantity Requested: {{inputs[0].quantity}}
+
+      Return true if available, otherwise return false.
+  unwrap: true
