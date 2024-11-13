@@ -27,21 +27,25 @@ cd workflow-name
 ## 📚 Workflow Categories
 
 ### 🤖 AI & Chat
+
 - **[Advanced Chat Interactions](./advanced-chat-interactions)** - Complex chat handling with context awareness
 - **[Smart Researcher With WebSearch](./smart-researcher-with-websearch)** - AI-powered research assistant
 - **[Generate User Persona](./generate-user-persona)** - Create detailed user personas from documentation
 
 ### 🔧 Automation & Integration
+
 - **[Document Management and Search](./document-management-and-search)** - Intelligent document handling
 - **[Website Crawler using Spider](./website-crawler-using-spider)** - Automated web content extraction
 - **[Integrating External Tools and APIs](./integrating-external-tools-and-apis)** - Third-party service integration
 
 ### 📊 Business & Productivity
+
 - **[Log Expense](./log-expense)** - Streamlined expense tracking
 - **[Order Placement](./order-placement)** - Automated order processing
 - **[Payment Processing](./payment-processing)** - Secure payment handling
 
 ### 🎯 Content & Marketing
+
 - **[Hook Generator Trending Reels](./hook-generator-trending-reels)** - Viral content creation
 - **[Sarcastic News Headline Generator](./sarcastic-news-headline-generator)** - Engaging headline creation
 - **[News Recommender](./news-recommender)** - Personalized content recommendations
@@ -52,7 +56,7 @@ cd workflow-name
 
 Each workflow follows a standardized structure:
 
-```
+```plaintext
 workflow-name/
 ├── README.md           # Documentation and usage instructions
 ├── julep.toml         # Entrypoint for the workflow
