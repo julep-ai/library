@@ -34,7 +34,7 @@ main:
 
 - prompt:
   - role: user
-    content: 
+    content:
 
       - type: text
         text: |-
@@ -47,14 +47,15 @@ main:
           ```json
           [
             {{
-              "aspect_ratio": "1.0", 
-              "width": 250, 
-            }}, 
+              "aspect_ratio": "1.0",
+              "width": 250,
+            }},
             {{
               "fetch_format": "auto"
             }},
             {{
-              "overlay": {{
+              "overlay":
+              {{
                 "url": "<image_url>"
               }}
             }},
@@ -64,8 +65,9 @@ main:
           ]
           ```
       - type: image_url
-        image_url: "_.url"
-      
+        image_url:
+          url: "{{{{_.url}}}}"
+
       - type: text
         text: |-
           Hey, check the video above, I need to apply the following transformations using cloudinary.
