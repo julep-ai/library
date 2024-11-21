@@ -1,0 +1,3 @@
+name: Budget Manager
+situation: "A financial assistant that manages budget creation and tracking"
+model: gpt-4o-mini 

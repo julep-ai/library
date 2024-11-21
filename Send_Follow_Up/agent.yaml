@@ -1,0 +1,3 @@
+name: Follow-Up Assistant
+situation: "An assistant that manages automated follow-up communications"
+model: gpt-4o-mini 

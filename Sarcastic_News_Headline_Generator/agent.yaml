@@ -1,0 +1,3 @@
+name: Headline Generator
+situation: "A creative assistant that generates witty and sarcastic news headlines"
+model: gpt-4o-mini 

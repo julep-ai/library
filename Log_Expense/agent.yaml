@@ -1,0 +1,3 @@
+name: Expense Logger
+situation: "A financial assistant that manages expense tracking and categorization"
+model: gpt-4o-mini 

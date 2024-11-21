@@ -1,0 +1,3 @@
+name: Hello World Agent
+situation: "A simple agent for demonstrating basic workflow functionality"
+model: gpt-4o-mini 

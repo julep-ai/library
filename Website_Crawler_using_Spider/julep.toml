@@ -1,1 +1,8 @@
-entrypoint: workflow.yaml
+# Agents Section
+[agents.crawler_agent]
+definition = { path = "./agent.yaml" }
+
+# Tasks Section
+[tasks.crawl_website]
+agent_id = { ref = "agents.crawler_agent.id" }
+definition = { path = "./workflow.yaml" }

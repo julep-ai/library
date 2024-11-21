@@ -1,0 +1,3 @@
+name: Research Assistant
+situation: "An intelligent researcher that performs web searches and keyword extraction"
+model: gpt-4o-mini 

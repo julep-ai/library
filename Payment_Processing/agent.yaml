@@ -1,0 +1,3 @@
+name: Payment Processor
+situation: "A system that handles payment transactions and confirmations"
+model: gpt-4o-mini 

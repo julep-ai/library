@@ -1,0 +1,3 @@
+name: Inventory Manager
+situation: "An inventory management system that tracks item availability"
+model: gpt-4o-mini 

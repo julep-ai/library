@@ -1,0 +1,3 @@
+name: Webinar Scheduler
+situation: "An assistant that manages webinar scheduling and event creation"
+model: gpt-4o-mini 
