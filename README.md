@@ -1,9 +1,27 @@
-<div align="center">
+<div align="center" id="top">
+ <img src="https://socialify.git.ci/julep-ai/julep/image?description=1&descriptionEditable=API%20for%20AI%20agents%20and%20multi-step%20tasks&forks=1&name=1&owner=1&pattern=Solid&stargazers=1&font=Source%20Code%20Pro&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fjulep-ai%2Fjulep%2Fdev%2F.github%2Fjulep-logo.svg&theme=Auto" alt="julep" width="640" height="320" />
+</div>
 
-![Julep](https://socialify.git.ci/julep-ai/julep/image?description=1&descriptionEditable=Build%20AI%20agents%20and%20workflows%20with%20a%20simple%20API&font=Source%20Code%20Pro&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fjulep-ai%2Fjulep%2Fdev%2F.github%2Fjulep-logo.svg&owner=1&pattern=Solid&stargazers=1&theme=Auto)
+<p align="center">
+  <br />
+  <a href="https://docs.julep.ai" rel="dofollow">Explore Docs (wip)</a>
+  ·
+  <a href="https://discord.com/invite/JTSBGRZrzj" rel="dofollow">Discord</a>
+  ·
+  <a href="https://x.com/julep_ai" rel="dofollow">𝕏</a>
+  ·
+  <a href="https://www.linkedin.com/company/julep-ai" rel="dofollow">LinkedIn</a>
+</p>
 
-[![Discord](https://img.shields.io/discord/1234567890?color=7289DA&label=Discord&logo=discord&logoColor=white)](https://discord.com/invite/JTSBGRZrzj)
-[![GitHub stars](https://img.shields.io/github/stars/julep-ai/julep?style=social)](https://github.com/julep-ai/julep)
+<p align="center">
+    <a href="https://www.npmjs.com/package/@julep/sdk"><img src="https://img.shields.io/npm/v/%40julep%2Fsdk?style=social&amp;logo=npm&amp;link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40julep%2Fsdk" alt="NPM Version"></a>
+    <span>&nbsp;</span>
+    <a href="https://pypi.org/project/julep"><img src="https://img.shields.io/pypi/v/julep?style=social&amp;logo=python&amp;label=PyPI&amp;link=https%3A%2F%2Fpypi.org%2Fproject%2Fjulep" alt="PyPI - Version"></a>
+    <span>&nbsp;</span>
+    <a href="https://hub.docker.com/u/julepai"><img src="https://img.shields.io/docker/v/julepai/agents-api?sort=semver&amp;style=social&amp;logo=docker&amp;link=https%3A%2F%2Fhub.docker.com%2Fu%2Fjulepai" alt="Docker Image Version"></a>
+    <span>&nbsp;</span>
+    <a href="https://choosealicense.com/licenses/apache/"><img src="https://img.shields.io/github/license/julep-ai/julep" alt="GitHub License"></a>
+</p>
 
 </div>
 
