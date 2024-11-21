@@ -69,7 +69,7 @@ main:
       - type: text
         text: |-
           Hey, check the video above, I need to apply the following transformations using cloudinary.
-          {{_0.transformation_prompt}}
+          {{{{_0.transformation_prompt}}}}
 
   unwrap: true
   settings:
