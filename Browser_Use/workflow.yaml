@@ -63,11 +63,8 @@ input_schema:
   properties:
     goal:
       type: string
-    agent_id:
-      type: string
   required:
     - goal
-    - agent_id
 
 ########################################################
 ################### MAIN WORKFLOW ######################
@@ -78,7 +75,7 @@ main:
 # Step #0
 - tool: create_julep_session
   arguments:
-    agent: _.agent_id
+    agent: str(agent.id)
     situation: "''"
     recall: 'False'
 
@@ -89,7 +86,7 @@ main:
 # Step #2
 - tool: create_browserbase_session
   arguments:
-    project_id: "'DEMO_PROJECT_ID'"
+    project_id: "'c35ee022-883e-4070-9f3c-89607393214b'"
 
 # Step #3
 - evaluate:
