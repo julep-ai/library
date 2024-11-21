@@ -18,7 +18,7 @@ tools:
     provider: email
     setup:
       host: smtp.mailgun.org
-      password: "DEMO_API_KEY" 
+      password: "DEMO_PASSWORD" 
       port: 587
       user: postmaster@email.julep.ai
 
