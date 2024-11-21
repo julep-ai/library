@@ -38,6 +38,7 @@ cd workflow-name
 - **[Website Crawler using Spider](./Website_Crawler_using_Spider)** - Automated web content extraction
 - **[Integrating External Tools and APIs](./Integrating_External_Tools_and_APIs)** - Third-party service integration
 - **[Browserbase Computer Use](./Broswerbase_Computer_Use)** - Headless browser automation and web interactions
+- **[Video Processing With Natural Language](./Video_Processing_With_Natural_Language)** - Video processing with input taken in the form of natural language
 
 ### 📊 Business & Productivity
 
