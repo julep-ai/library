@@ -53,7 +53,7 @@ main:
     prompt:
       - role: system
         content: >-
-          You are a skilled agent tasked with creating a single description for each trending real estate reel for the given topic: {{{{inputs[0].topic}}}}.
+          You are a skilled agent tasked with creating a single description for each trending real estate reel for the given topic: {{inputs[0].topic}}.
           Use information gathered from the following data sources to gather the most relevant information:
 
           Search Results: {{_['caption']}}
