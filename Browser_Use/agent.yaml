@@ -1,3 +1,3 @@
-name: Browserbase Use Agent
+name: Browser Use Agent
 situation: "An intelligent agent that utilizes a headless browser to perform tasks and interact with web pages."
 model: claude-3.5-sonnet-20241022

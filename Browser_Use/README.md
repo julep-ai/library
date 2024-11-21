@@ -1,4 +1,4 @@
-# Browserbase Use Workflow
+# Browser Use Workflow
 
 This workflow enables headless browser automation for web interactions and tasks.
 
