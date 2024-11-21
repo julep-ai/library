@@ -1,8 +1,0 @@
-# Agents Section
-[agents.webinar_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.schedule_webinar]
-agent_id = { ref = "agents.webinar_agent.id" }
-definition = { path = "./workflow.yaml" }

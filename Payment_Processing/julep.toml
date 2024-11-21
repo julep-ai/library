@@ -1,8 +1,0 @@
-# Agents Section
-[agents.payment_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.process_payment]
-agent_id = { ref = "agents.payment_agent.id" }
-definition = { path = "./workflow.yaml" }

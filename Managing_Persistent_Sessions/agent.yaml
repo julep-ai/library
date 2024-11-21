@@ -1,3 +1,0 @@
-name: Session Manager
-situation: "A system that maintains context and state across user interactions"
-model: gpt-4o-mini 
