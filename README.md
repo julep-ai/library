@@ -61,6 +61,7 @@ workflow-name/
 ├── README.md           # Documentation and usage instructions
 ├── julep.toml         # Entrypoint for the workflow
 ├── workflow.yaml      # Main workflow definition
+├── agent.yaml         # Agent configuration
 ```
 
 ## 🤝 Contributing
