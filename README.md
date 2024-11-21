@@ -68,7 +68,6 @@ cd workflow-name
 - **[User Management and Personalization](./User_Management_and_Personalization)** - User registration and content recommendations
 - **[Trip Planner With Weather And WikiInfo](./Trip_Planner_With_Weather_And_WikiInfo)** - Travel planning with weather and tourist information
 
-[View all workflows →](./workflows)
 
 ## 🛠️ Workflow Structure
 
