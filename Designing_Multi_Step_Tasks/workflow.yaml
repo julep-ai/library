@@ -13,7 +13,7 @@ tools:
   integration:
     provider: brave
     setup:
-      api_key: "your_api_key"
+      api_key: "DEMO_API_KEY"
 
 main:
 # Step 1: Prompt - Initial research question

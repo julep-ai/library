@@ -21,7 +21,7 @@ tools:
   integration:
     provider: weather
     setup:
-      api_key: "YOUR_WEATHER_API_KEY"
+      api_key: "DEMO_API_KEY"
 
 main:
 - if: "len(inputs[0].chat_history) > 5"

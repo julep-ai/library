@@ -20,7 +20,7 @@ tools:
 main:
 - tool: finance_tool
   arguments:
-    agent_id: "'{agent.id}'"
+    agent_id: "agent.id"
     data:
       amount: inputs[0].amount
       category: inputs[0].category

@@ -35,7 +35,7 @@ main:
   map:
     tool: document_create
     arguments:
-      agent_id: "'{agent.id}'"
+      agent_id: "agent.id"
       data:
         title: _.title
         content: _.content
@@ -49,15 +49,15 @@ main:
 
 - tool: document_search
   arguments:
-    agent_id: "'{agent.id}'"
+    agent_id: "agent.id"
     text: inputs[0].query
 
 - prompt:
   - role: system
     content: >-
       Based on the search results, provide a summary of the most relevant documents found.
-      Search query: {{{{inputs[0].query}}}}
+      Search query: {{inputs[0].query}}
       Number of results: {{len(outputs[0])}}
       
       Results:
-      {{{{outputs[0]}}}}
+      {{outputs[0]}}
