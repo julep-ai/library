@@ -28,27 +28,45 @@ cd workflow-name
 
 ### 🤖 AI & Chat
 
-- **[Advanced Chat Interactions](./advanced-chat-interactions)** - Complex chat handling with context awareness
-- **[Smart Researcher With WebSearch](./smart-researcher-with-websearch)** - AI-powered research assistant
-- **[Generate User Persona](./generate-user-persona)** - Create detailed user personas from documentation
+- **[Advanced Chat Interactions](./Advanced_Chat_Interactions)** - Complex chat handling with context awareness
+- **[Smart Researcher With WebSearch](./Smart_Researcher_With_WebSearch)** - AI-powered research assistant
+- **[Generate User Persona](./Generate_User_Persona)** - Create detailed user personas from documentation
 
 ### 🔧 Automation & Integration
 
-- **[Document Management and Search](./document-management-and-search)** - Intelligent document handling
-- **[Website Crawler using Spider](./website-crawler-using-spider)** - Automated web content extraction
-- **[Integrating External Tools and APIs](./integrating-external-tools-and-apis)** - Third-party service integration
+- **[Document Management and Search](./Document_Management_and_Search)** - Intelligent document handling
+- **[Website Crawler using Spider](./Website_Crawler_using_Spider)** - Automated web content extraction
+- **[Integrating External Tools and APIs](./Integrating_External_Tools_and_APIs)** - Third-party service integration
+- **[Browserbase Computer Use](./Broswerbase_Computer_Use)** - Headless browser automation and web interactions
 
 ### 📊 Business & Productivity
 
-- **[Log Expense](./log-expense)** - Streamlined expense tracking
-- **[Order Placement](./order-placement)** - Automated order processing
-- **[Payment Processing](./payment-processing)** - Secure payment handling
+- **[Log Expense](./Log_Expense)** - Streamlined expense tracking
+- **[Order Placement](./Order_Placement)** - Automated order processing
+- **[Payment Processing](./Payment_Processing)** - Secure payment handling
+- **[Set Budget](./Set_Budget)** - Budget creation and tracking
 
 ### 🎯 Content & Marketing
 
-- **[Hook Generator Trending Reels](./hook-generator-trending-reels)** - Viral content creation
-- **[Sarcastic News Headline Generator](./sarcastic-news-headline-generator)** - Engaging headline creation
-- **[News Recommender](./news-recommender)** - Personalized content recommendations
+- **[Hook Generator Trending Reels](./Hook_Generator_Trending_Reels)** - Viral content creation
+- **[Sarcastic News Headline Generator](./Sarcastic_News_Headline_Generator)** - Engaging headline creation
+- **[News Recommender](./News_Recommender)** - Personalized content recommendations
+
+### 📅 Event Management
+
+- **[Schedule Webinar](./Schedule_Webinar)** - Webinar scheduling and event creation
+- **[Send Reminder](./Send_Reminder)** - Automated reminder distribution
+- **[Send Follow-Up](./Send_Follow_Up)** - Automated follow-up communications
+
+### 🧩 Miscellaneous
+
+- **[Hello World](./hello-world)** - Basic workflow demonstration
+- **[Designing Multi-Step Tasks](./Designing_Multi_Step_Tasks)** - Multi-step task creation for research and summarization
+- **[Devfest Email Assistant](./Devfest-Email-Assistant)** - Email management for Devfest events
+- **[Inventory Check](./Inventory_Check)** - Item availability verification
+- **[Managing Persistent Sessions](./Managing_Persistent_Sessions)** - User session management
+- **[User Management and Personalization](./User_Management_and_Personalization)** - User registration and content recommendations
+- **[Trip Planner With Weather And WikiInfo](./Trip_Planner_With_Weather_And_WikiInfo)** - Travel planning with weather and tourist information
 
 [View all workflows →](./workflows)
 

@@ -1,0 +1,231 @@
+name: computer-use-task
+
+
+########################################################
+####################### TOOLS ##########################
+########################################################
+
+tools:
+- name: create_browserbase_session
+  type: integration
+  integration:
+    provider: browserbase
+    method: create_session
+    setup:
+      api_key: "DEMO_API_KEY"
+      project_id: "DEMO_PROJECT_ID"
+
+- name: get_cdp_url
+  type: integration
+  integration:
+    provider: browserbase
+    method: get_connect_url
+    setup:
+      api_key: "DEMO_API_KEY"
+      project_id: "DEMO_PROJECT_ID"
+
+- name: get_session_view_urls
+  type: integration
+  integration:
+    provider: browserbase
+    method: get_live_urls
+    setup:
+      api_key: "DEMO_API_KEY"
+      project_id: "DEMO_PROJECT_ID"
+
+- name: perform_browser_action
+  type: integration
+  integration:
+    provider: remote_browser
+    method: perform_action
+    setup:
+      width: 1024
+      height: 768
+
+- name: create_julep_session
+  type: system
+  system:
+    resource: session
+    operation: create
+
+- name: session_chat
+  type: system
+  system:
+    resource: session
+    operation: chat
+
+########################################################
+################### INPUT SCHEMA #######################
+########################################################
+
+input_schema:
+  type: object
+  properties:
+    goal:
+      type: string
+    agent_id:
+      type: string
+  required:
+    - goal
+    - agent_id
+
+########################################################
+################### MAIN WORKFLOW ######################
+########################################################
+
+main:
+
+# Step #0
+- tool: create_julep_session
+  arguments:
+    agent: _.agent_id
+    situation: "''"
+    recall: 'False'
+
+# Step #1
+- evaluate:
+    julep_session_id: _.id
+
+# Step #2
+- tool: create_browserbase_session
+  arguments:
+    project_id: "DEMO_PROJECT_ID"
+
+# Step #3
+- evaluate:
+    browser_session_id: _.id
+
+# Step #4
+- tool: get_session_view_urls
+  arguments:
+    id: _.browser_session_id
+
+# Step #5
+- evaluate:
+    debugger_url: _.urls.debuggerUrl
+
+# Step #6
+- tool: get_cdp_url
+  arguments:
+    id: outputs[3].browser_session_id
+
+# Step #7
+- evaluate:
+    connect_url: _.url
+
+# Step #8
+# Navigate to google to avoid sending a blank 
+# screenshot when computer use starts
+- tool: perform_browser_action
+  arguments:
+    connect_url: _.connect_url
+    action: "'navigate'"
+    text: "'https://www.google.com'"
+
+# Step #9
+- workflow: run_browser
+  arguments:
+    julep_session_id: outputs[1].julep_session_id
+    cdp_url: outputs[7].connect_url
+    messages:
+    - role: "'user'"
+      content: |-
+        """
+        <SYSTEM_CAPABILITY>
+        * You are utilising a headless chrome browser to interact with the internet.
+        * You can use the computer tool to interact with the browser.
+        * You have access to only the browser.
+        * You are already inside the browser.
+        * You can't open new tabs or windows.
+        * For now, rely on screenshots as the only way to see the browser.
+        * You can't don't have access to the browser's UI.
+        * YOU CANNOT WRITE TO THE SEARCH BAR OF THE BROWSER.
+        </SYSTEM_CAPABILITY>
+        <GOAL>
+        *""" + inputs[0].goal + NEWLINE + "</GOAL>"
+    workflow_label: "'run_browser'" # <----- REMOVE THIS
+
+
+########################################################
+################# RUN BROWSER WORKFLOW #################
+########################################################
+
+run_browser:
+
+- tool: session_chat
+  arguments:
+    session_id: _.julep_session_id
+    messages: _.messages
+    recall: 'False'
+
+# Evaluate the response from the agent
+- evaluate:
+    content: _.choices[0].message.content
+    tool_calls: "[ \
+      { \
+        'tool_call_id': tool_call.id, \
+        'action': load_json(tool_call.function.arguments)['action'], \
+        'text': load_json(tool_call.function.arguments).get('text'), \
+        'coordinate': load_json(tool_call.function.arguments).get('coordinate') \
+      } \
+      for tool_call in _.choices[0].message.tool_calls or [] if tool_call.type == 'function']"
+
+# TODO: Handle navigation special case
+
+# Perform the actions requested by the agent
+- foreach:
+    in: _.tool_calls
+    do:
+      tool: perform_browser_action
+      arguments:
+        connect_url: inputs[0].cdp_url
+        action: _.action if not (str(_.get('text', '')).startswith('http') and _.action == 'type') else 'navigate'
+        text: _.get('text')
+        coordinate: _.get('coordinate')
+
+# ----------------------------------------------------------------
+# Convert the result of the actions into a chat message
+# ----------------------------------------------------------------
+
+# Handle image content part
+- evaluate:
+    contents: "[\
+      { \
+        'type': 'image_url', \
+        'image_url': { \
+          'url': result['base64_image'], \
+        } \
+      } if result['base64_image'] is not None else \
+      { \
+        'type': 'text', \
+        'text': result['output'] if result['output'] is not None else 'done' \
+      } \
+      for result in _]"
+
+- evaluate:
+    messages: "[{'content': [_.contents[i]], 'role': 'tool', 'name': 'computer', 'tool_call_id': outputs[1].tool_calls[i].tool_call_id} for i in range(len(_.contents))]"
+# ----------------------------------------------------------------
+# Check if the goal is achieved and recursively run the browser
+# ----------------------------------------------------------------
+
+- workflow: check_goal_status
+  arguments:
+    messages: _.messages
+    julep_session_id: inputs[0].julep_session_id
+    cdp_url: inputs[0].cdp_url
+    workflow_label: "'check_goal_status'" 
+
+
+########################################################
+############## CHECK GOAL STATUS WORKFLOW ##############
+########################################################
+
+check_goal_status:
+- if: len(_.messages) > 0
+  then:
+    workflow: run_browser
+    arguments:
+      messages: _.messages
+      julep_session_id: _.julep_session_id
+      cdp_url: _.cdp_url
+      workflow_label: "'run_browser'" 
