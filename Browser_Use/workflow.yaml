@@ -170,7 +170,6 @@ run_browser:
       } \
       for tool_call in _.choices[0].message.tool_calls or [] if tool_call.type == 'function']"
 
-# TODO: Handle navigation special case
 
 # Perform the actions requested by the agent
 - foreach:
