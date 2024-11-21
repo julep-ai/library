@@ -7,8 +7,8 @@ tools:
     method: GET
     url: "https://instagram-scraper-api3.p.rapidapi.com/reels_by_keyword"
     headers:
-      x-rapidapi-key: "DEMO_API_KEY"
-      x-rapidapi-host: "DEMO_API_KEY"
+      x-rapidapi-key: "7b1f071fe3msh9b81fd788e08774p17e9e4jsnf78"
+      x-rapidapi-host: "instagram-scraper-api3.p.rapidapi.com"
     follow_redirects: true
 
 - name: get_hooks_doc
