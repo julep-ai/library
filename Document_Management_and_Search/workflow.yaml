@@ -19,12 +19,14 @@ input_schema:
                                  
 tools:
 - name: document_create
+  type: system
   system:
     resource: agent
     subresource: doc
     operation: create   
 
 - name: document_search
+  type: system
   system:
     resource: agent
     subresource: doc
