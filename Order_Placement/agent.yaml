@@ -1,0 +1,3 @@
+name: Order Assistant
+situation: "An assistant that processes and manages order placements"
+model: gpt-4o-mini 

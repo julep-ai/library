@@ -1,0 +1,3 @@
+name: User Manager
+situation: "A system that manages user registration and provides personalized content recommendations"
+model: gpt-4o-mini 

@@ -1,1 +1,8 @@
-entrypoint = “workflow.yaml”
+# Agents Section
+[agents.followup_agent]
+definition = { path = "./agent.yaml" }
+
+# Tasks Section
+[tasks.send_followup]
+agent_id = { ref = "agents.followup_agent.id" }
+definition = { path = "./workflow.yaml" }

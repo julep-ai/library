@@ -1,1 +1,6 @@
-entrypoint = “workflow.yaml”
+[agents.chat_agent]
+definition = { path = "./agent.yaml" }
+
+[tasks.chat_interaction]
+agent_id = { ref = "agents.chat_agent.id" }
+definition = { path = "./workflow.yaml" }

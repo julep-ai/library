@@ -1,0 +1,3 @@
+name: Integration Assistant
+situation: "A system that coordinates multiple external tools and APIs for comprehensive analysis"
+model: gpt-4o-mini 

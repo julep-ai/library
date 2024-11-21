@@ -1,0 +1,3 @@
+name: Chat Assistant
+situation: "An intelligent chat assistant that handles complex conversations with context awareness"
+model: gpt-4o-mini
