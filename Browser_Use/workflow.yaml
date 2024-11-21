@@ -89,7 +89,7 @@ main:
 # Step #2
 - tool: create_browserbase_session
   arguments:
-    project_id: "DEMO_PROJECT_ID"
+    project_id: "'DEMO_PROJECT_ID'"
 
 # Step #3
 - evaluate:
