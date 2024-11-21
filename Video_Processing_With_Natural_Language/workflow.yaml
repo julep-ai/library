@@ -1,0 +1,91 @@
+name: Video Processing With Natural Language
+
+input_schema:
+  type: object
+  properties:
+    video_url:
+      type: string
+      description: The url of the file to upload
+    public_id:
+      type: string
+      description: The public id of the file to upload
+    transformation_prompt:
+      type: string
+      description: The prompt for the transformations to apply to the file
+
+tools:
+- name: cloudinary_upload
+  type: integration
+  integration:
+    provider: cloudinary
+    method: media_upload
+    setup:
+      cloudinary_api_key: "DEMO_API_KEY"
+      cloudinary_api_secret: "DEMO_API_SECRET"
+      cloudinary_cloud_name: "DEMO_CLOUD_NAME"
+
+main:
+- tool: cloudinary_upload
+  arguments:
+    file: '_0.video_url'
+    public_id: '_0.public_id'
+    upload_params:
+      resource_type: "'video'"
+
+- prompt:
+  - role: user
+    content: 
+
+      - type: text
+        text: |-
+          You are a Cloudinary expert. You are given a medial url. it might be an image or a video.
+          You need to come up with a json of transformations to apply to the given media.
+          Overall the json could have multiple transformation json objects.
+          Each transformation json object can have the multiple key value pairs.
+          Each key value pair should have the key as the transformation name like "aspect_ratio", "crop", "width" etc and the value as the transformation parameter value.
+          Given below is an example of a transformation json list. Don't provide explanations and/or comments in the json.
+          ```json
+          [
+            {{
+              "aspect_ratio": "1.0", 
+              "width": 250, 
+            }}, 
+            {{
+              "fetch_format": "auto"
+            }},
+            {{
+              "overlay": {{
+                "url": "<image_url>"
+              }}
+            }},
+            {{
+              "flags": "layer_apply"
+            }}
+          ]
+          ```
+      - type: image_url
+        image_url: "_.url"
+      
+      - type: text
+        text: |-
+          Hey, check the video above, I need to apply the following transformations using cloudinary.
+          {{_0.transformation_prompt}}
+
+  unwrap: true
+  settings:
+    model: gemini/gemini-1.5-pro
+
+# Extract the json from the model's response
+- evaluate:
+    model_transformation: load_json(_[_.find("```json")+7:][:_[_.find("```json")+7:].find("```")])
+
+- tool: cloudinary_upload
+  arguments:
+    file: '_0.video_url'
+    public_id: '_0.public_id'
+    upload_params:
+      transformation: '_.model_transformation'
+      resource_type: "'video'"
+
+- evaluate:
+    transformed_video_url: '_.url'
