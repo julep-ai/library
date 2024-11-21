@@ -15,7 +15,7 @@ tools:
   integration:
     provider: brave
     setup:
-      api_key: "YOUR_API_KEY"
+      api_key: "DEMO_API_KEY"
 
 main:
 - over: _.topics

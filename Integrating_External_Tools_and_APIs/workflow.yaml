@@ -16,14 +16,14 @@ tools:
   integration:
     provider: brave
     setup:
-      api_key: "YOUR_API_KEY"
+      api_key: "DEMO_API_KEY"
 
 - name: weather
   type: integration
   integration:
     provider: weather
     setup:
-      openweathermap_api_key: "YOUR_API_KEY"
+      openweathermap_api_key: "DEMO_API_KEY"
 
 - name: wikipedia
   type: integration
