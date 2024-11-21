@@ -1,8 +1,0 @@
-# Agents Section
-[agents.session_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.manage_session]
-agent_id = { ref = "agents.session_agent.id" }
-definition = { path = "./workflow.yaml" }

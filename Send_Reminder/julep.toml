@@ -1,8 +1,0 @@
-# Agents Section
-[agents.reminder_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.send_reminder]
-agent_id = { ref = "agents.reminder_agent.id" }
-definition = { path = "./workflow.yaml" }

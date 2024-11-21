@@ -40,35 +40,18 @@ cd workflow-name
 - **[Browserbase Computer Use](./Broswerbase_Computer_Use)** - Headless browser automation and web interactions
 - **[Video Processing With Natural Language](./Video_Processing_With_Natural_Language)** - Video processing with input taken in the form of natural language
 
-### 📊 Business & Productivity
-
-- **[Log Expense](./Log_Expense)** - Streamlined expense tracking
-- **[Order Placement](./Order_Placement)** - Automated order processing
-- **[Payment Processing](./Payment_Processing)** - Secure payment handling
-- **[Set Budget](./Set_Budget)** - Budget creation and tracking
-
 ### 🎯 Content & Marketing
 
 - **[Hook Generator Trending Reels](./Hook_Generator_Trending_Reels)** - Viral content creation
 - **[Sarcastic News Headline Generator](./Sarcastic_News_Headline_Generator)** - Engaging headline creation
 - **[News Recommender](./News_Recommender)** - Personalized content recommendations
 
-### 📅 Event Management
-
-- **[Schedule Webinar](./Schedule_Webinar)** - Webinar scheduling and event creation
-- **[Send Reminder](./Send_Reminder)** - Automated reminder distribution
-- **[Send Follow-Up](./Send_Follow_Up)** - Automated follow-up communications
-
 ### 🧩 Miscellaneous
 
 - **[Hello World](./hello-world)** - Basic workflow demonstration
 - **[Designing Multi-Step Tasks](./Designing_Multi_Step_Tasks)** - Multi-step task creation for research and summarization
-- **[Devfest Email Assistant](./Devfest-Email-Assistant)** - Email management for Devfest events
-- **[Inventory Check](./Inventory_Check)** - Item availability verification
-- **[Managing Persistent Sessions](./Managing_Persistent_Sessions)** - User session management
-- **[User Management and Personalization](./User_Management_and_Personalization)** - User registration and content recommendations
+- **[Devfest Email Assistant](./Devfest-Email-Assistant)** - Email management for questions and inquiries asked by users in the Devfest event
 - **[Trip Planner With Weather And WikiInfo](./Trip_Planner_With_Weather_And_WikiInfo)** - Travel planning with weather and tourist information
-
 
 ## 🛠️ Workflow Structure
 
