@@ -14,6 +14,7 @@ input_schema:
 
 tools:
 - name: send_email
+  type: integration
   integration:
     provider: email
     setup:
@@ -23,6 +24,7 @@ tools:
       user: postmaster@email.julep.ai
 
 - name: search_docs
+  type: system
   system:
     resource: agent
     subresource: doc
