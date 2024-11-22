@@ -46,7 +46,6 @@ cd workflow-name
 
 ### 🤖 AI & Chat
 
-- **[Advanced Chat Interactions](./Advanced_Chat_Interactions)** - Complex chat handling with context awareness
 - **[Smart Researcher With WebSearch](./Smart_Researcher_With_WebSearch)** - AI-powered research assistant
 - **[Generate User Persona](./Generate_User_Persona)** - Create detailed user personas from documentation
 
