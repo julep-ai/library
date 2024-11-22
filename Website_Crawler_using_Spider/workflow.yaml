@@ -1,5 +1,12 @@
 name: Crawling Task
 
+input_schema:
+  type: object
+  properties:
+    url:
+      type: string
+      description: The url of the website to crawl
+
 # Define the tools that the agent will use in this workflow
 tools:
 - name: spider_crawler
