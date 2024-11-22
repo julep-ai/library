@@ -22,6 +22,13 @@ tools:
     setup:
       openweathermap_api_key: "DEMO_API_KEY"
 
+- name: internet_search
+  type: integration
+  integration:
+    provider: brave
+    setup:
+      api_key: "DEMO_API_KEY"
+
 main:
 - over: inputs[0].locations
   map:
@@ -31,26 +38,44 @@ main:
 
 - over: inputs[0].locations
   map:
-    tool: wikipedia
+    tool: internet_search
     arguments:
-      query: "_ + ' tourist attractions'"
+      query: "'tourist attractions in ' + _"
 
+# Zip locations, weather, and attractions into a list of tuples [(location, weather, attractions)]
 - evaluate:
-    zipped: "list(zip(inputs[0].locations, [output['result'] for output in outputs[0]], [output['documents'][0]['page_content'] for output in outputs[1]]))"  # [(location, weather, attractions)]
+    zipped: |-
+      list(
+        zip(
+          inputs[0].locations,
+          [output['result'] for output in outputs[0]],
+          outputs[1]
+        )
+      )
+
 
 - over: _['zipped']
   parallelism: 3
+  # Inside the map step, each `_` represents the current element in the list
+  # which is a tuple of (location, weather, attractions)
   map:
     prompt:
     - role: system
       content: >-
-        You are a travel assistant. Your task is to create a detailed itinerary for visiting tourist attractions in "{{_[0]}}" based on the weather conditions and the top tourist attractions provided.
-        
-        Current weather condition at "{{_[0]}}":
-        "{{_[1]}}"
+        You are {{agent.name}}. Your task is to create a detailed itinerary
+        for visiting tourist attractions in some locations.
+        The user will give you the following information for each location:
 
-        Top tourist attractions in "{{_[0]}}":
-        "{{_[2]}}"
-
-        Suggest outdoor or indoor activities based on the above information.
+        - The location
+        - The current weather condition
+        - The top tourist attractions
+    - role: user
+      content: >-
+        Location: "{{_[0]}}"
+        Weather: "{{_[1]}}"
+        Attractions: "{{_[2]}}"
     unwrap: true
+
+- evaluate:
+    final_plan: |-
+      '\\n---------------\\n'.join(activity for activity in _)
