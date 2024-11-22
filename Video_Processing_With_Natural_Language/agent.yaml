@@ -1,3 +1,3 @@
 name: Video Processor
 about: "A system that processes videos with input taken in the form of natural language"
-model: gemini/gemini-1.5-pro
+model: gpt-4o-mini
