@@ -1,48 +1,47 @@
-# Hook Generator Trending Reels Workflow
+# Trip Planner With Weather And Wiki Info
 
-This workflow generates engaging hooks for trending social media reels based on a given topic.
+This workflow generates detailed travel itineraries that incorporate weather conditions and tourist attractions for multiple locations.
 
 ## Prerequisites
 
-- RapidAPI key for Instagram Scraper API
-- Agent system for hook template storage
+- OpenWeatherMap API key
+- Brave Search API key
 
 ## Workflow Details
 
 - **Input Schema**:
-  - `topic`: The topic to search for trending reels
+  - `locations`: Array of location strings to generate plans for
 
 - **Tools**:
-  - `api_tool_call`: Instagram Scraper API integration for fetching trending reels
-  - `get_hooks_doc`: Retrieves hook templates from agent documents
+  - `wikipedia`: Integration for Wikipedia information
+  - `weather`: OpenWeatherMap API integration for current conditions
+  - `internet_search`: Brave Search API for finding attractions
 
 - **Main Steps**:
-  1. Data Collection
-     - Fetch trending reels by keyword using Instagram API
-     - Process media metadata and statistics
-  2. Content Analysis
-     - Extract captions and media information
-     - Calculate virality and engagement scores
-  3. Description Generation
-     - Process reel content in parallel (4 threads)
-     - Generate JSON responses with metrics
-  4. Hook Creation
-     - Retrieve hook templates from agent
-     - Generate 3 hooks per reel using templates
-     - Ensure hooks are topic-focused and engaging
-  5. Optimization
-     - Parallel processing for efficiency
-     - Format and structure final output
+  1. Weather Data Collection
+     - Fetch current weather for each location
+  2. Attraction Research
+     - Search for tourist attractions in each location
+  3. Data Integration
+     - Combine location, weather, and attraction data
+  4. Itinerary Generation
+     - Process locations in parallel (3 threads)
+     - Generate detailed travel plans considering weather
+     - Create personalized activity recommendations
+  5. Plan Compilation
+     - Format and combine all location plans
+     - Present organized final itinerary
 
 ## Usage
 
 Ideal for:
 
-- Social media content creators
-- Marketing automation systems
-- Engagement optimization tools
+- Travel planning applications
+- Tourism services
+- Personal trip organization
 
 ## Performance Notes
 
-- Uses parallel processing (4 threads) for content analysis
-- Implements efficient JSON response handling
+- Uses parallel processing (3 threads) for itinerary generation
+- Efficient data integration through zip operations
+- Structured output formatting for readability
