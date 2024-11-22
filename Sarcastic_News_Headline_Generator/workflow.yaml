@@ -1,5 +1,12 @@
 name: Sarcasm Headline Generator
 
+input_schema:
+  type: object
+  properties:
+    topic:
+      type: string
+      description: The topic to generate a sarcastic headline for
+
 tools:
 - name: brave_search
   type: integration

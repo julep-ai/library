@@ -1,5 +1,12 @@
 name: Trending Reels Hook Generator
 
+input_schema:
+  type: object
+  properties:
+    topic:
+      type: string
+      description: The topic to generate trending reels for
+
 tools:
 - name: api_tool_call
   type: api_call
