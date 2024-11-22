@@ -33,25 +33,23 @@ main:
       query: "inputs[0].topic"
 
 - evaluate:
-    summary: "list({
-              'caption': ((clip.get('media') or {}).get('caption') or {}).get('text') or 'No Caption Available',
-              'code': (clip.get('media') or {}).get('code') or 'No Code Available',
-              'media_id': ((clip.get('media') or {}).get('caption') or {}).get('media_id', 0),
-              'video_duration': (clip.get('media') or {}).get('video_duration', 0),
-              'thumbnail_url': (clip.get('media') or {}).get('image_versions2', {}).get('candidates', [{}]).get('url') or 'No Thumbnail URL Available',
-              'video_url_360': [video.get('url') for video in (clip.get('media') or {}).get('video_versions', [{}])) if video.get('width') == 360][0] if [video.get('url') for video in (clip.get('media') or {}).get('video_versions', [{}])) if video.get('width') == 360] else 'No URL Available',
-              'video_url_720': [video.get('url') for video in (clip.get('media') or {}).get('video_versions', [{}])) if video.get('width') == 720][0] if [video.get('url') for video in (clip.get('media') or {}).get('video_versions', [{}])) if video.get('width') == 720] else 'No URL Available',
-              'play_count': (clip.get('media') or {}).get('play_count', 0),
-              'like_count': (clip.get('media') or {}).get('like_count', 0),
-              'comment_count': (clip.get('media') or {}).get('comment_count', 0),
-              'reshare_count': (clip.get('media') or {}).get('reshare_count', 0),
-              'has_audio': (clip.get('media') or {}).get('has_audio', False),
-              'audio_type': (clip.get('media') or {}).get('clips_metadata', {}).get('audio_type', 'No Audio Type Available'),
-              'username': (clip.get('media') or {}).get('user', {}).get('username') or 'No Username Available',
-              'full_name': (clip.get('media') or {}).get('user', {}).get('full_name') or 'No Full Name Available',
-              'profile_pic_url': (clip.get('media') or {}).get('user', {}).get('profile_pic_url') or 'No Profile Pic URL Available',
-              'virality_score': (clip.get('media') or {}).get('reshare_count', 0) / ((clip.get('media') or {}).get('play_count', 1) if (clip.get('media') or {}).get('play_count', 0) > 0 else 1),
-              'engagement_score': (clip.get('media') or {}).get('like_count', 0) / ((clip.get('media') or {}).get('play_count', 1) if (clip.get('media') or {}).get('play_count', 0) > 0 else 1)
+    summary:  "list({
+              'caption': 'No Caption Available' if 'media' not in clip or 'caption' not in clip['media'] or 'text' not in clip['media']['caption'] else clip['media']['caption']['text'],
+              'code': 'No Code Available' if 'media' not in clip or 'code' not in clip['media'] else clip['media']['code'],
+              'media_id': 0 if 'media' not in clip or 'caption' not in clip['media'] or 'media_id' not in clip['media']['caption'] else clip['media']['caption']['media_id'],
+              'video_duration': 0 if 'media' not in clip or 'video_duration' not in clip['media'] else clip['media']['video_duration'],
+              'thumbnail_url': 'No Thumbnail URL Available' if 'media' not in clip or 'image_versions2' not in clip['media'] or 'candidates' not in clip['media']['image_versions2'] or not clip['media']['image_versions2']['candidates'] or 'url' not in clip['media']['image_versions2']['candidates'][0] else clip['media']['image_versions2']['candidates'][0]['url'],
+              'play_count': 0 if 'media' not in clip or 'play_count' not in clip['media'] else clip['media']['play_count'],
+              'like_count': 0 if 'media' not in clip or 'like_count' not in clip['media'] else clip['media']['like_count'],
+              'comment_count': 0 if 'media' not in clip or 'comment_count' not in clip['media'] else clip['media']['comment_count'],
+              'reshare_count': 0 if 'media' not in clip or 'reshare_count' not in clip['media'] else clip['media']['reshare_count'],
+              'has_audio': False if 'media' not in clip or 'has_audio' not in clip['media'] else clip['media']['has_audio'],
+              'audio_type': 'No Audio Type Available' if 'media' not in clip or 'clips_metadata' not in clip['media'] or 'audio_type' not in clip['media']['clips_metadata'] else clip['media']['clips_metadata']['audio_type'],
+              'username': 'No Username Available' if 'media' not in clip or 'user' not in clip['media'] or 'username' not in clip['media']['user'] else clip['media']['user']['username'],
+              'full_name': 'No Full Name Available' if 'media' not in clip or 'user' not in clip['media'] or 'full_name' not in clip['media']['user'] else clip['media']['user']['full_name'],
+              'profile_pic_url': 'No Profile Pic URL Available' if 'media' not in clip or 'user' not in clip['media'] or 'profile_pic_url' not in clip['media']['user'] else clip['media']['user']['profile_pic_url'],
+              'virality_score': (0 if 'media' not in clip or 'reshare_count' not in clip['media'] else clip['media']['reshare_count']) / (1 if 'media' not in clip or 'play_count' not in clip['media'] or clip['media']['play_count'] == 0 else clip['media']['play_count']),
+              'engagement_score': (0 if 'media' not in clip or 'like_count' not in clip['media'] else clip['media']['like_count']) / (1 if 'media' not in clip or 'play_count' not in clip['media'] or clip['media']['play_count'] == 0 else clip['media']['play_count'])
               } for clip in _['json']['data']['reels_serp_modules'][0]['clips'])"
 
 - over: _['summary']
