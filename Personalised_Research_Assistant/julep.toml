@@ -1,0 +1,8 @@
+# Agents Section
+[agents.arxiv_agent]
+definition = { path = "./agent.yaml" }
+
+# Tasks Section
+[tasks.recommend_news]
+agent_id = { ref = "agents.arxiv_agent.id" }
+definition = { path = "./workflow.yaml" }
