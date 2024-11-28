@@ -1,0 +1,3 @@
+name: Personalized Research Paper Recommendation Assistant
+about: "A system that recommends personalized research papers based on user persona and research interests"
+model: gpt-4o-mini

@@ -48,6 +48,7 @@ cd workflow-name
 
 - **[Smart Researcher With WebSearch](./Smart_Researcher_With_WebSearch)** - AI-powered research assistant
 - **[Generate User Persona](./Generate_User_Persona)** - Create detailed user personas from documentation
+- **[Personalized Research Paper Recommendation Assistant](./Personalised_Research_Assistant)** - Personalized research paper recommendation assistant based on user persona and research interests
 
 ### 🔧 Automation & Integration
 

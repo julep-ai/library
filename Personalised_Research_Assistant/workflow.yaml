@@ -1,0 +1,206 @@
+name: Personalized Research Paper Recommendation Assistant
+
+input_schema:
+  type: object
+  properties:
+    topics:
+      type: array
+      items:
+        type: string
+      description: The topics to search for.
+    user_id:
+      type: string
+      description: The user id to search for.
+
+tools:
+                          
+- name: brave_search
+  type: integration
+  integration:
+    provider: brave
+    setup:
+      api_key: "DEMO_API_KEY"
+      
+- name: arxiv_search
+  type: integration
+  integration:
+    provider: arxiv
+                          
+- name: llama_parse_scrape
+  type: integration
+  integration:
+    provider: llama_parse
+    setup:
+      llamaparse_api_key: "DEMO_API_KEY"
+      params:
+        result_format: "text"
+        num_workers: 3
+
+- name: get_user_from_id
+  description: Get a user from the user id
+  type: system
+  system:
+    resource: user
+    operation: list
+
+- name: list_user_docs
+  description: List the user docs
+  type: system
+  system:
+    resource: user
+    subresource: doc
+    operation: list
+
+- name: get_user_docs
+  description: Get user docs
+  type: system
+  system:
+    resource: user
+    subresource: doc
+    operation: list
+                          
+- name : create_agent_doc
+  description: Create an agent doc
+  type: system
+  system:
+    resource: agent
+    subresource: doc
+    operation: create
+                          
+- name: create_user_doc
+  description: Create a user doc
+  type: system
+  system:
+    resource: user
+    subresource: doc
+    operation: create
+
+main:
+
+# Calling brave search for each topic
+- over: _.topics
+  parallelism: 2
+  map:
+    tool: brave_search
+    arguments:
+      query: "'the latest news about ' + _"
+
+# Prompting the agent to extract keywords from the news snippet
+- prompt:
+  - role: system
+    content: |
+      You are a research assistant.
+      Based on the following latest html news snippet, generate keywords:
+                        
+      {% for docs in _ %}
+        {% for doc in docs['result'] %}
+          {{doc['snippet']}}
+        {% endfor %}
+      {% endfor %}
+                          
+      Your response should be a list of keywords, separated by commas. Do not add any other text.
+      Example: `KEYWORDS: keyword1, keyword2, keyword3`
+  unwrap: true
+
+# Extracting the top 8 keywords
+- evaluate:
+    keywords: str(_).split(',')[:8]
+
+# Calling arxiv search for each keyword
+- over: _.keywords
+  parallelism: 4
+  map:
+    tool: arxiv_search
+    arguments:
+      query: _
+      max_results: "2"
+
+# Get the arxiv results
+- evaluate:
+    arxiv_results: _
+                          
+# Get the user from the id using metadata_filter (returns a list)
+- tool: get_user_from_id
+  arguments:
+    limit: "1"
+    sort_by: "'created_at'"
+    direction: "'desc'"
+    metadata_filter:
+      ppid: inputs[0]['user_id']
+
+# Unwrap the list to get the user
+- evaluate:
+    user_info: _[0]
+
+# Get the user persona from user docs
+- tool: get_user_docs
+  arguments:
+    user_id: inputs[0]['user_id']
+    limit: "1"
+    sort_by: "'created_at'"
+    direction: "'desc'"
+
+# Unwrap the list to get the user persona
+- evaluate:
+    persona: _[0].content[0]
+
+# Prompting the agent to select the top 5 papers
+- prompt:
+  - role: system
+    content: |
+      As an expert in recommending research papers tailored to individual user personas, your task is to select papers top 5 papers that align closely with the user's interests and professional needs. 
+      This careful selection ensures that the recommendations are both relevant and beneficial to the user's ongoing research and professional development.
+
+      Below is a detailed description of the user's persona:
+      {{_.persona}}
+
+      Based on this persona, please review the following list of research paper titles. 
+      These titles have been gathered from a comprehensive search to match the user's interests:
+
+      {% for result in outputs[4].arxiv_results %}
+        {% for doc in result['result'] %}
+          - (Title: {{doc['title']}}, 
+              
+          - URL: {{doc['pdf_url']}})
+        {% endfor %}
+      {% endfor %}
+
+      After reviewing the titles, please compile a list of the top 5 relevant research papers. 
+      Your response should be a list of Titles and URLs of the papers, separated by double commas. 
+      Do not add any other text.
+      Example: `Title1,url1,,Title2,url2,,Title3,url3`
+  unwrap: true
+
+# Extracting the titles and urls
+- evaluate:
+    paper_titles_and_urls: |-
+      list(
+        zip(
+          [pair.split(',')[0] for pair in str(_).split(',,')],
+          [pair.split(',')[1].replace("http://", "https://") for pair in str(_).split(',,')]
+        )
+      )
+                          
+# Calling llama parse scrape for each url
+- over: _['paper_titles_and_urls']
+  parallelism: 5
+  map:
+    tool: llama_parse_scrape
+    arguments:
+      file: _[1]
+      filename: _[0]
+      params:
+        result_format: "'text'"
+
+# Extracting the paper contents
+- evaluate:
+    paper_contents: str(_)
+
+# Create a new persona document
+- tool: create_user_doc
+  arguments:
+    user_id: inputs[0]['user_id']
+    data:
+      embed_instruction: "'Represent the query for User persona used for document retrieval: '"
+      title: "'Research Papers'"
+      content: _['paper_contents']
