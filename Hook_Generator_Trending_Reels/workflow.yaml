@@ -50,8 +50,7 @@ main:
                       'profile_pic_url': (((response.get('user') or {}).get('profile_pic_url')) or 'No Profile Pic URL Available'),
                       'virality_score': (((response.get('reshare_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
                       'engagement_score': (((response.get('like_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
-                      'video_duration': (response.get('video_duration') or 0),
-                      'video_url_360': ([v.get('url') for v in (response.get('video_versions') or []) if v.get('width') == 360][0] if response.get('video_versions') else 'No URL Available')
+                      'video_duration': (response.get('video_duration') or 0)
                       } for response in _['json']['data']['items'])"  
 
 - over: _['summary']
