@@ -52,7 +52,6 @@ cd workflow-name
 
 ### 🔧 Automation & Integration
 
-- **[Document Management and Search](./Document_Management_and_Search)** - Intelligent document handling
 - **[Website Crawler using Spider](./Website_Crawler_using_Spider)** - Automated web content extraction
 - **[Integrating External Tools and APIs](./Integrating_External_Tools_and_APIs)** - Third-party service integration
 - **[Browserbase Computer Use](./Broswerbase_Computer_Use)** - Headless browser automation and web interactions

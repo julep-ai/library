@@ -1,6 +1,0 @@
-[agents.doc_agent]
-definition = { path = "./agent.yaml" }
-
-[tasks.doc_management]
-agent_id = { ref = "agents.doc_agent.id" }
-definition = { path = "./workflow.yaml" }
