@@ -12,10 +12,10 @@ tools:
   type: api_call
   api_call:
     method: GET 
-    url: "https://instagram-scraper-api3.p.rapidapi.com/reels_by_keyword"
+    url: "https://instagram-scraper-api2.p.rapidapi.com/v1/hashtag"
     headers:
-      x-rapidapi-key: "7b1f071fe3msh9b81fd788e08774p17e9e4jsnf78f4f264d2d"
-      x-rapidapi-host: "instagram-scraper-api3.p.rapidapi.com"
+      x-rapidapi-key: "2d112f8d17msha0aae074c5b5c63p14fc61jsn2a7e5a20d48f"
+      x-rapidapi-host: "instagram-scraper-api2.p.rapidapi.com"
     follow_redirects: true
 
 - name: get_hooks_doc
@@ -30,27 +30,29 @@ main:
 - tool: api_tool_call
   arguments:
     params:
-      query: "inputs[0].topic"
+      hashtag: "inputs[0].topic"
 
 - evaluate:
     summary:  "list({
-              'caption': 'No Caption Available' if 'media' not in clip or 'caption' not in clip['media'] or 'text' not in clip['media']['caption'] else clip['media']['caption']['text'],
-              'code': 'No Code Available' if 'media' not in clip or 'code' not in clip['media'] else clip['media']['code'],
-              'media_id': 0 if 'media' not in clip or 'caption' not in clip['media'] or 'media_id' not in clip['media']['caption'] else clip['media']['caption']['media_id'],
-              'video_duration': 0 if 'media' not in clip or 'video_duration' not in clip['media'] else clip['media']['video_duration'],
-              'thumbnail_url': 'No Thumbnail URL Available' if 'media' not in clip or 'image_versions2' not in clip['media'] or 'candidates' not in clip['media']['image_versions2'] or not clip['media']['image_versions2']['candidates'] or 'url' not in clip['media']['image_versions2']['candidates'][0] else clip['media']['image_versions2']['candidates'][0]['url'],
-              'play_count': 0 if 'media' not in clip or 'play_count' not in clip['media'] else clip['media']['play_count'],
-              'like_count': 0 if 'media' not in clip or 'like_count' not in clip['media'] else clip['media']['like_count'],
-              'comment_count': 0 if 'media' not in clip or 'comment_count' not in clip['media'] else clip['media']['comment_count'],
-              'reshare_count': 0 if 'media' not in clip or 'reshare_count' not in clip['media'] else clip['media']['reshare_count'],
-              'has_audio': False if 'media' not in clip or 'has_audio' not in clip['media'] else clip['media']['has_audio'],
-              'audio_type': 'No Audio Type Available' if 'media' not in clip or 'clips_metadata' not in clip['media'] or 'audio_type' not in clip['media']['clips_metadata'] else clip['media']['clips_metadata']['audio_type'],
-              'username': 'No Username Available' if 'media' not in clip or 'user' not in clip['media'] or 'username' not in clip['media']['user'] else clip['media']['user']['username'],
-              'full_name': 'No Full Name Available' if 'media' not in clip or 'user' not in clip['media'] or 'full_name' not in clip['media']['user'] else clip['media']['user']['full_name'],
-              'profile_pic_url': 'No Profile Pic URL Available' if 'media' not in clip or 'user' not in clip['media'] or 'profile_pic_url' not in clip['media']['user'] else clip['media']['user']['profile_pic_url'],
-              'virality_score': (0 if 'media' not in clip or 'reshare_count' not in clip['media'] else clip['media']['reshare_count']) / (1 if 'media' not in clip or 'play_count' not in clip['media'] or clip['media']['play_count'] == 0 else clip['media']['play_count']),
-              'engagement_score': (0 if 'media' not in clip or 'like_count' not in clip['media'] else clip['media']['like_count']) / (1 if 'media' not in clip or 'play_count' not in clip['media'] or clip['media']['play_count'] == 0 else clip['media']['play_count'])
-              } for clip in _['json']['data']['reels_serp_modules'][0]['clips'])"
+                      'caption': ((response.get('caption') or {}).get('text') or 'No Caption Available'),
+                      'code': (response.get('code') or 'No Code Available'),
+                      'play_count': (response.get('play_count') or 0),
+                      'like_count': (response.get('like_count') or 0),
+                      'media_id': ((response.get('caption') or {}).get('id') or 0),
+                      'hashtags': ((response.get('caption') or {}).get('hashtags') or 'No Hashtag Available'),
+                      'video_duration': (response.get('video_duration') or 0),
+                      'comment_count': (response.get('comment_count') or 0),
+                      'reshare_count': (response.get('reshare_count') or 0),
+                      'has_audio': (response.get('has_audio') or False),
+                      'audio_type': (((response.get('clips_metadata') or {}).get('audio_type')) or 'No Audio Type Available'),
+                      'username': (((response.get('user') or {}).get('username')) or 'No Username Available'),
+                      'full_name': (((response.get('user') or {}).get('full_name')) or 'No Full Name Available'),
+                      'profile_pic_url': (((response.get('user') or {}).get('profile_pic_url')) or 'No Profile Pic URL Available'),
+                      'virality_score': (((response.get('reshare_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
+                      'engagement_score': (((response.get('like_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
+                      'video_duration': (response.get('video_duration') or 0),
+                      'video_url_360': ([v.get('url') for v in (response.get('video_versions') or []) if v.get('width') == 360][0] if response.get('video_versions') else 'No URL Available')
+                      } for response in _['json']['data']['items'])"  
 
 - over: _['summary']
   parallelism: 4
