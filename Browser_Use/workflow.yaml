@@ -15,15 +15,6 @@ tools:
       api_key: "DEMO_API_KEY"
       project_id: "DEMO_PROJECT_ID"
 
-- name: get_cdp_url
-  type: integration
-  integration:
-    provider: browserbase
-    method: get_connect_url
-    setup:
-      api_key: "DEMO_API_KEY"
-      project_id: "DEMO_PROJECT_ID"
-
 - name: get_session_view_urls
   type: integration
   integration:
@@ -76,7 +67,7 @@ main:
 - tool: create_julep_session
   arguments:
     agent: str(agent.id)
-    situation: "''"
+    situation: "'Juelp Browser Use Agent'"
     recall: 'False'
 
 # Step #1
@@ -91,6 +82,7 @@ main:
 # Step #3
 - evaluate:
     browser_session_id: _.id
+    connect_url: _.connect_url
 
 # Step #4
 - tool: get_session_view_urls
@@ -102,28 +94,19 @@ main:
     debugger_url: _.urls.debuggerUrl
 
 # Step #6
-- tool: get_cdp_url
-  arguments:
-    id: outputs[3].browser_session_id
-
-# Step #7
-- evaluate:
-    connect_url: _.url
-
-# Step #8
 # Navigate to google to avoid sending a blank 
 # screenshot when computer use starts
 - tool: perform_browser_action
   arguments:
-    connect_url: _.connect_url
+    connect_url: outputs[3].connect_url
     action: "'navigate'"
     text: "'https://www.google.com'"
 
-# Step #9
+# Step #7
 - workflow: run_browser
   arguments:
     julep_session_id: outputs[1].julep_session_id
-    cdp_url: outputs[7].connect_url
+    cdp_url: outputs[3].connect_url
     messages:
     - role: "'user'"
       content: |-
