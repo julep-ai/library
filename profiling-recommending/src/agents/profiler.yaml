@@ -1,0 +1,3 @@
+name: ProfilerAgent
+about: It is used to create/update the profile of the user
+model: gpt-4o
