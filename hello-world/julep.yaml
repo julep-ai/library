@@ -1,1 +1,7 @@
+agents:
+  - definition: "src/agent.yaml"
+    canonical_name: "agent_one"
 
+tasks:
+  - agent_id: "agent_one"
+    definition: "src/workflow.yaml"
