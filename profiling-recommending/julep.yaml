@@ -1,14 +1,14 @@
 agents:
-  - definition: "src/agents/profiler.yaml"
-  - definition: "src/agents/recommender.yaml"
+- definition: "src/agents/profiler.yaml"
+- definition: "src/agents/recommender.yaml"
 
 tasks:
-  - agent_id: "{agents[0].id}"
-    definition: "src/tasks/generate-update-persona.yaml"
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/generate-update-persona.yaml"
 
-  - agent_id: "{agents[1].id}"
-    definition: "src/tasks/recommend-news-articles.yaml"
+- agent_id: "{agents[1].id}"
+  definition: "src/tasks/recommend-news-articles.yaml"
 
 tools:
-  - agent_id: "{agents[0].id}"
-    definition: "src/tools/computer.yaml"
+- agent_id: "{agents[0].id}"
+  definition: "src/tools/computer.yaml"
