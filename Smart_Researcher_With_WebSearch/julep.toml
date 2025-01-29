@@ -1,8 +1,0 @@
-# Agents Section
-[agents.research_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.web_research]
-agent_id = { ref = "agents.research_agent.id" }
-definition = { path = "./workflow.yaml" }

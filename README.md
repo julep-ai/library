@@ -46,40 +46,43 @@ cd workflow-name
 
 ### 🤖 AI & Chat
 
-- **[Smart Researcher With WebSearch](./Smart_Researcher_With_WebSearch)** - AI-powered research assistant
-- **[Generate User Persona](./Generate_User_Persona)** - Create detailed user personas from documentation
-- **[Personalized Research Paper Recommendation Assistant](./Personalised_Research_Assistant)** - Personalized research paper recommendation assistant based on user persona and research interests
+- **[Smart Researcher With WebSearch](./online-researcher)** - AI-powered research assistant
+- **[Personalized Research Assistant](./personalized-research-assistant)** - Personalized research paper recommendation assistant based on user persona and research interests
+- **[Trip Planner](./trip-planner)** - Travel planning with weather and tourist information
 
 ### 🔧 Automation & Integration
 
-- **[Website Crawler using Spider](./Website_Crawler_using_Spider)** - Automated web content extraction
-- **[Integrating External Tools and APIs](./Integrating_External_Tools_and_APIs)** - Third-party service integration
-- **[Browserbase Computer Use](./Broswerbase_Computer_Use)** - Headless browser automation and web interactions
-- **[Video Processing With Natural Language](./Video_Processing_With_Natural_Language)** - Video processing with input taken in the form of natural language
+- **[Website Crawler Spider](./website-crawler-spider)** - Automated web content extraction
+- **[External Tools and APIs Integration](./integrating-external-tools-and-apis)** - Third-party service integration
+- **[Browser Use](./browser-use)** - Headless browser automation and web interactions
+- **[Video Processing](./video-processing-natural-lang)** - Video processing with input taken in the form of natural language
 
 ### 🎯 Content & Marketing
 
-- **[Hook Generator Trending Reels](./Hook_Generator_Trending_Reels)** - Viral content creation
-- **[Sarcastic News Headline Generator](./Sarcastic_News_Headline_Generator)** - Engaging headline creation
-- **[News Recommender](./News_Recommender)** - Personalized content recommendations
+- **[Trending Reels Hook Generator](./trending-reels-hook-generator)** - Viral content creation
+- **[Sarcastic Headline Generator](./sarcastic-headline-generator)** - Engaging headline creation
+- **[Profiling and Recommending](./profiling-recommending)** - Profiling and recommending workflow
 
 ### 🧩 Miscellaneous
 
 - **[Hello World](./hello-world)** - Basic workflow demonstration
-- **[Designing Multi-Step Tasks](./Designing_Multi_Step_Tasks)** - Multi-step task creation for research and summarization
-- **[Devfest Email Assistant](./Devfest-Email-Assistant)** - Email management for questions and inquiries asked by users in the Devfest event
-- **[Trip Planner With Weather And WikiInfo](./Trip_Planner_With_Weather_And_WikiInfo)** - Travel planning with weather and tourist information
+- **[Multi-Step Task](./multi-step-task)** - Multi-step task creation for research and summarization
+- **[Email Assistant](./email-assistant)** - Email management for questions and inquiries asked by users in the Devfest event
+- **[Analyst](./analyst)** - Data analysis and insights generation
 
-## 🛠️ Workflow Structure
+## 🛠️ Workflow Directory Structure
 
 Each workflow follows a standardized structure:
 
 ```plaintext
 workflow-name/
 ├── README.md           # Documentation and usage instructions
-├── julep.toml         # Entrypoint for the workflow
-├── workflow.yaml      # Main workflow definition
-├── agent.yaml         # Agent configuration
+├── julep.yaml         # Workflow configuration and entrypoint
+└── src/              # Source directory
+    ├── agents/       # Agent definitions
+    │   └── agent.yaml
+    └── tasks/        # Task definitions
+        └── task.yaml
 ```
 
 ## 🤝 Contributing

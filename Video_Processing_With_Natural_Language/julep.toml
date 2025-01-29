@@ -1,8 +1,0 @@
-# Agents Section
-[agents.video_processor]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.process_video]
-agent_id = { ref = "agents.video_processor.id" }
-definition = { path = "./workflow.yaml" }

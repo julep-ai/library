@@ -1,3 +1,0 @@
-name: News Recommender
-about: "A system that recommends personalized news articles based on user persona and reading history"
-model: gpt-4o-mini 
