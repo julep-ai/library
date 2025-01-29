@@ -83,6 +83,8 @@ workflow-name/
     │   └── agent.yaml
     └── tasks/        # Task definitions
         └── task.yaml
+    └── tools/        # Tools definitions
+        └── tool.yaml
 ```
 
 ## 🤝 Contributing
