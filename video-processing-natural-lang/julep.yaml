@@ -1,0 +1,6 @@
+agents:
+- definition: "src/agents/video-processing-natural-lang-agent.yaml"
+
+tasks:
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/video-processing-natural-lang-task.yaml" 

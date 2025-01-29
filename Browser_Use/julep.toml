@@ -1,8 +1,0 @@
-# Agents Section
-[agents.browser_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.browser_interaction]
-agent_id = { ref = "agents.browser_agent.id" }
-definition = { path = "./workflow.yaml" }

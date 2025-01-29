@@ -1,8 +1,0 @@
-# Agents Section
-[agents.integration_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.external_integration]
-agent_id = { ref = "agents.integration_agent.id" }
-definition = { path = "./workflow.yaml" }

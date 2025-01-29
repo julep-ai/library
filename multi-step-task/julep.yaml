@@ -1,0 +1,6 @@
+agents:
+- definition: "src/agents/multi-step-agent.yaml"
+
+tasks:
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/multi-step-task.yaml" 

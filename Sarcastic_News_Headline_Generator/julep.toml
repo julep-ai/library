@@ -1,8 +1,0 @@
-# Agents Section
-[agents.headline_agent]
-definition = { path = "./agent.yaml" }
-
-# Tasks Section
-[tasks.generate_headline]
-agent_id = { ref = "agents.headline_agent.id" }
-definition = { path = "./workflow.yaml" }

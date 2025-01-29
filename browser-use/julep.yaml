@@ -1,0 +1,10 @@
+agents:
+- definition: "src/agents/browser-agent.yaml"
+
+tasks:
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/browser-task.yaml" 
+
+tools:
+- agent_id: "{agents[0].id}"
+  definition: "src/tools/browser-tools.yaml"
