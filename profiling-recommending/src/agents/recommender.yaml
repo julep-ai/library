@@ -1,3 +1,4 @@
-name: title-recommender
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
+name: Title Recommender
 about: It is used to recommend the title recommendation for the user
 model: gpt-4o

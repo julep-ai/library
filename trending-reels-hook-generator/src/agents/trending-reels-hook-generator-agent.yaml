@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
 name: Hook Generator
 about: "A creative assistant that generates engaging hooks for social media content"
 model: gpt-4o-mini 

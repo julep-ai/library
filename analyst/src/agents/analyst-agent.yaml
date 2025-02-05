@@ -1,3 +1,4 @@
-name: Integration Assistant
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
+name: Analyst
 about: "A system that coordinates multiple external tools and APIs for comprehensive analysis"
 model: gpt-4o-mini 

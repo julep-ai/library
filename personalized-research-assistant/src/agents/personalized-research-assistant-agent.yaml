@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
 name: Personalized Research Paper Recommendation Assistant
 about: "A system that recommends personalized research papers based on user persona and research interests"
 model: gpt-4o-mini
