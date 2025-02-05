@@ -1,3 +1,4 @@
-name: ProfilerAgent
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
+name: Profiler Agent
 about: It is used to create/update the profile of the user
 model: gpt-4o

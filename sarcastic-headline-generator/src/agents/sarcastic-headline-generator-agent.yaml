@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
 name: Headline Generator
 about: "A creative assistant that generates witty and sarcastic news headlines"
 model: gpt-4o-mini 

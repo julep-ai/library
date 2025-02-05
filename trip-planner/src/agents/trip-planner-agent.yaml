@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_agent_request.json
 name: Travel Assistant
 about: "A travel assistant that plans trips based on weather and tourist information"
 model: gpt-4o-mini 
