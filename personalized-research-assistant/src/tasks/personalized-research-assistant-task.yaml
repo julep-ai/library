@@ -89,131 +89,121 @@ tools:
 ############################# MAIN WORKFLOW ####################################
 ################################################################################
 main:
-
-# Step 0: Search for latest news on each topic
+# Step 0: Calling brave search for each topic
 - over: _.topics
   parallelism: 2
   map:
     tool: brave_search
     arguments:
-      query: "'the latest news about ' + _"
+      query: $ 'the latest news about ' + _
 
-# Step 1: Extract keywords from news snippets
+# Step 1: Prompting the agent to extract keywords from the news snippet
 - prompt:
   - role: system
     content: |
-      You are a research assistant.
+      $ f'''You are a research assistant.
       Based on the following latest html news snippet, generate keywords:
                         
-      {% for docs in _ %}
-        {% for doc in docs['result'] %}
-          {{doc['snippet']}}
-        {% endfor %}
-      {% endfor %}
+      { '\\n'.join([doc['snippet'] for docs in _ for doc in docs['result']]) }
                           
       Your response should be a list of keywords, separated by commas. Do not add any other text.
-      Example: `KEYWORDS: keyword1, keyword2, keyword3`
+      Example: `KEYWORDS: keyword1, keyword2, keyword3`'''
   unwrap: true
 
-# Step 2: Process and limit keywords
+# Step 2: Extracting the top 8 keywords
 - evaluate:
-    keywords: str(_).split(',')[:8]
+    keywords: $ str(_).split(',')[:8]
 
-# Step 3: Search arxiv for each keyword
-- over: _.keywords
+# Step 3: Calling arxiv search for each keyword
+- over: $ _.keywords
   parallelism: 4
   map:
     tool: arxiv_search
     arguments:
-      query: _
-      max_results: "2"
+      query: $ _
+      max_results: $ 2
 
-# Step 4: Collect arxiv results
+# Step 4: Get the arxiv results
 - evaluate:
-    arxiv_results: _
+    arxiv_results: $ _
                           
-# Step 5: Fetch user information
+# Step 5: Get the user from the id using metadata_filter (returns a list)
 - tool: get_user_from_id
   arguments:
-    limit: "1"
-    sort_by: "'created_at'"
-    direction: "'desc'"
+    limit: $ 1
+    sort_by: created_at
+    direction: desc
     metadata_filter:
-      ppid: inputs[0]['user_id']
+      ppid: $ steps[0].input['user_id']
 
-# Step 6: Process user information
+# Step 6: Unwrap the list to get the user
 - evaluate:
-    user_info: _[0]
+    user_info: $ _[0]
 
-# Step 7: Fetch user persona
+# Step 7: Get the user persona from user docs
 - tool: get_user_docs
   arguments:
-    user_id: inputs[0]['user_id']
-    limit: "1"
-    sort_by: "'created_at'"
-    direction: "'desc'"
+    user_id: $ steps[0].input['user_id']
+    limit: $ 1
+    sort_by: created_at
+    direction: desc
 
-# Step 8: Extract user persona
+# Step 8: Unwrap the list to get the user persona
 - evaluate:
-    persona: _[0].content[0]
+    persona: $ _[0].content[0]
 
-# Step 9: Select top papers based on user persona
+# Step 9: Prompting the agent to select the top 5 papers
 - prompt:
   - role: system
     content: |
-      As an expert in recommending research papers tailored to individual user personas, your task is to select papers top 5 papers that align closely with the user's interests and professional needs. 
+      $ f'''As an expert in recommending research papers tailored to individual user personas, your task is to select papers top 5 papers that align closely with the user's interests and professional needs. 
       This careful selection ensures that the recommendations are both relevant and beneficial to the user's ongoing research and professional development.
 
       Below is a detailed description of the user's persona:
-      {{_.persona}}
+      { _.persona }
 
       Based on this persona, please review the following list of research paper titles. 
       These titles have been gathered from a comprehensive search to match the user's interests:
 
-      {% for result in outputs[4].arxiv_results %}
-        {% for doc in result['result'] %}
-          - (Title: {{doc['title']}}, 
-              
-          - URL: {{doc['pdf_url']}})
-        {% endfor %}
-      {% endfor %}
+      { '\\n'.join([f"- (Title: {doc['title']}, \\n\\n  - URL: {doc['pdf_url']})" for result in steps[4].output.arxiv_results for doc in result['result']]) }
+
 
       After reviewing the titles, please compile a list of the top 5 relevant research papers. 
       Your response should be a list of Titles and URLs of the papers, separated by double commas. 
       Do not add any other text.
-      Example: `Title1,url1,,Title2,url2,,Title3,url3`
+      Example: `Title1,url1,,Title2,url2,,Title3,url3`'''
   unwrap: true
 
-# Step 10: Process selected papers
+# Step 10: Extracting the titles and urls
 - evaluate:
     paper_titles_and_urls: |-
-      list(
+      $ list(
         zip(
           [pair.split(',')[0] for pair in str(_).split(',,')],
           [pair.split(',')[1].replace("http://", "https://") for pair in str(_).split(',,')]
         )
       )
                           
-# Step 11: Fetch paper contents
-- over: _['paper_titles_and_urls']
+# Step 11: Calling llama parse scrape for each url
+- over: $ _['paper_titles_and_urls']
   parallelism: 5
   map:
     tool: llama_parse_scrape
     arguments:
-      file: _[1]
-      filename: _[0]
+      file: $ _[1]
+      filename: $ _[0]
       params:
-        result_format: "'text'"
+        result_format: text
 
-# Step 12: Process paper contents
+# Step 12: Extracting the paper contents
 - evaluate:
-    paper_contents: str(_)
+    paper_contents: $ str(_)
 
-# Step 13: Create user document with recommendations
+# Step 13: Create a new persona document
 - tool: create_user_doc
   arguments:
-    user_id: inputs[0]['user_id']
+    user_id: $ steps[0].input['user_id']
     data:
-      embed_instruction: "'Represent the query for User persona used for document retrieval: '"
-      title: "'Research Papers'"
-      content: _['paper_contents']
+      embed_instruction: $ "Represent the query for User persona used for document retrieval:"
+      title: Research Papers
+      content: $ _['paper_contents']

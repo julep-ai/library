@@ -40,92 +40,95 @@ tools:
 ################################################################################
 main:
 
-# Step 0: Fetch trending reels data for the topic
+# Step 0: Get the trending reels from Instagram
 - tool: api_tool_call
   arguments:
     params:
-      hashtag: "inputs[0].topic"
+      hashtag: $ steps[0].input.topic
 
-# Step 1: Extract and process relevant information from the response
+# Step 1: Extract the caption, virality score, engagement score and one-liner description for each reel
 - evaluate:
-    summary:  "list({
-                      'caption': ((response.get('caption') or {}).get('text') or 'No Caption Available'),
-                      'code': (response.get('code') or 'No Code Available'),
-                      'play_count': (response.get('play_count') or 0),
-                      'like_count': (response.get('like_count') or 0),
-                      'media_id': ((response.get('caption') or {}).get('id') or 0),
-                      'hashtags': ((response.get('caption') or {}).get('hashtags') or 'No Hashtag Available'),
-                      'video_duration': (response.get('video_duration') or 0),
-                      'comment_count': (response.get('comment_count') or 0),
-                      'reshare_count': (response.get('reshare_count') or 0),
-                      'has_audio': (response.get('has_audio') or False),
-                      'audio_type': (((response.get('clips_metadata') or {}).get('audio_type')) or 'No Audio Type Available'),
-                      'username': (((response.get('user') or {}).get('username')) or 'No Username Available'),
-                      'full_name': (((response.get('user') or {}).get('full_name')) or 'No Full Name Available'),
-                      'profile_pic_url': (((response.get('user') or {}).get('profile_pic_url')) or 'No Profile Pic URL Available'),
-                      'virality_score': (((response.get('reshare_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
-                      'engagement_score': (((response.get('like_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
-                      'video_duration': (response.get('video_duration') or 0)
-                      } for response in _['json']['data']['items'])"  
+    summary: >-
+      $ list({
+                'caption': ((response.get('caption') or {}).get('text') or 'No Caption Available'),
+                'code': (response.get('code') or 'No Code Available'),
+                'play_count': (response.get('play_count') or 0),
+                'like_count': (response.get('like_count') or 0),
+                'media_id': ((response.get('caption') or {}).get('id') or 0),
+                'hashtags': ((response.get('caption') or {}).get('hashtags') or 'No Hashtag Available'),
+                'video_duration': (response.get('video_duration') or 0),
+                'comment_count': (response.get('comment_count') or 0),
+                'reshare_count': (response.get('reshare_count') or 0),
+                'has_audio': (response.get('has_audio') or False),
+                'audio_type': (((response.get('clips_metadata') or {}).get('audio_type')) or 'No Audio Type Available'),
+                'username': (((response.get('user') or {}).get('username')) or 'No Username Available'),
+                'full_name': (((response.get('user') or {}).get('full_name')) or 'No Full Name Available'),
+                'profile_pic_url': (((response.get('user') or {}).get('profile_pic_url')) or 'No Profile Pic URL Available'),
+                'virality_score': (((response.get('reshare_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
+                'engagement_score': (((response.get('like_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
+                'video_duration': (response.get('video_duration') or 0)
+                } for response in _['json']['data']['items']) 
 
-# Step 2: Generate descriptions for each trending reel
-- over: _['summary']
+# Step 2: Generate a description for each reel
+- over: $ _['summary']
   parallelism: 4
   map:
     prompt:
       - role: system
         content: >-
-          You are a skilled agent tasked with creating a single description for each trending real estate reel for the given topic: {{inputs[0].topic}}.
+          $ f'''You are a skilled agent tasked with creating a single description for each trending real estate reel for the given topic: {{steps[0].input.topic}}.
           Use information gathered from the following data sources to gather the most relevant information:
 
-          Search Results: {{_['caption']}}
-          Virality Score: {{_['virality_score']}}
-          Engagement Score: {{_['engagement_score']}}
+          Search Results: {_['caption']}
+          Virality Score: {_['virality_score']}
+          Engagement Score: {_['engagement_score']}
 
-          Provide a json repsonse containing the caption, virality score, enagement score and one-liner description for the reel.
+          Provide a json repsonse containing the caption, virality score, enagement score and one-liner description for the reel.'''
     unwrap: true   
 
-# Step 3: Process and format the descriptions
+# Step 3: Get the description and summary
 - evaluate:
-    summary: outputs[1]['summary']
-    description: list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
+    summary: $ steps[1].output['summary']
+    description: $ list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
 
-# Step 4: Fetch hook templates
+# Step 4: Get the hooks document
 - tool: get_hooks_doc
   arguments:
     agent_id: "agent.id"
-                          
-- evaluate:
-    hooks_doc: _[0]['content']
 
-# Step 5: Generate hooks for each reel
-- over: outputs[3]['description']
+# Step 5: Extract the hooks document
+- evaluate:
+    content: $ _[0]['content']
+  label: hooks_doc
+
+# Step 6: Generate hooks for each reel
+- over: $ steps[3].output['description']
   parallelism: 4
   map:
     prompt:
       - role: system
         content: >-
-          You are a skilled content creator tasked with generating 3 engaging video hooks for each reel having its description and caption. Use the following document containing hook templates to create effective hooks:
+          $ f'''You are a skilled content creator tasked with generating 3 engaging video hooks for each reel having its description and caption. Use the following document containing hook templates to create effective hooks:
           
-          {{_.hooks_doc}}
+          {steps["hooks_doc"].output.content}
           
           Here are the caption and description to create hooks for:
 
-          Caption: {{_['caption']}}
-          Description: {{_['description']}}
-          Virality Score: {{_['virality_score']}}
-          Engagement Score: {{_['engagement_score']}}
+          Caption: {_['caption']}
+          Description: {_['description']}
+          Virality Score: {_['virality_score']}
+          Engagement Score: {_['engagement_score']}
 
           Your task is to generate 3 hooks (for the reel) by adapting the most suitable templates from the document. Each hook should be no more than 1 sentence long and directly relate to its corresponding idea.
           
-          Basically, all the ideas are taken from a search about this topic, which is {{inputs[0].topic}}. You should focus on this while writing the hooks.
+          Basically, all the ideas are taken from a search about this topic, which is {{steps[0].input.topic}}. You should focus on this while writing the hooks.
 
           Ensure that each hook is creative, engaging, and relevant to its idea while following the structure of the chosen template.
 
-          Provide a json repsonse containing the caption, virality score, enagement score, description and the list of 3 hooks for the reel.
+          Provide a json repsonse containing the caption, virality score, enagement score, description and the list of 3 hooks for the reel.'''
     unwrap: true
 
-# Step 6: Process and format the final output
+# Step 7: Get the hooks
 - evaluate:
-    summary: outputs[3]['summary']
-    hooks: list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
+    summary: $ steps[3].output['summary']
+    hooks: $ list(load_json(res.replace("```json", "").replace("```", "")) for res in _)

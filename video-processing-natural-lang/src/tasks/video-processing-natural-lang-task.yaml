@@ -38,15 +38,15 @@ tools:
 ############################# MAIN WORKFLOW ####################################
 ################################################################################
 main:
-# Step 0: Upload original video to Cloudinary
+# Step 0: Upload the video to cloudinary
 - tool: cloudinary_upload
   arguments:
-    file: '_0.video_url'
-    public_id: '_0.public_id'
+    file: $ steps[0].input.video_url
+    public_id: $ steps[0].input.public_id
     upload_params:
-      resource_type: "'video'"
+      resource_type: video
 
-# Step 1: Generate transformation instructions from natural language prompt
+# Step 1: Generate the transformation json
 - prompt:
   - role: user
     content:
@@ -61,50 +61,52 @@ main:
           Given below is an example of a transformation json list. Don't provide explanations and/or comments in the json.
           ```json
           [
-            {{
+            {
               "aspect_ratio": "1.0",
               "width": 250,
-            }},
-            {{
+            },
+            {
               "fetch_format": "auto"
-            }},
-            {{
+            },
+            {
               "overlay":
-              {{
+              {
                 "url": "<image_url>"
-              }}
-            }},
-            {{
+              }
+            },
+            {
               "flags": "layer_apply"
-            }}
+            }
           ]
           ```
       - type: image_url
         image_url:
-          url: "{{{{_.url}}}}"
+          url: $ _.url
 
       - type: text
         text: |-
-          Hey, check the video above, I need to apply the following transformations using cloudinary.
-          {{{{_0.transformation_prompt}}}}
+          $ f'''Hey, check the video above, I need to apply the following transformations using cloudinary.
+          {steps[0].input.transformation_prompt}'''
 
   unwrap: true
   settings:
     model: gemini/gemini-1.5-pro
 
-# Step 2: Parse transformation JSON from model response
+# Step 2: Extract the json from the model's response
 - evaluate:
-    model_transformation: load_json(_[_.find("```json")+7:][:_[_.find("```json")+7:].find("```")])
+    model_transformation: >-
+      $ load_json(
+        _[_.find("```json")+7:][:_[_.find("```json")+7:].find("```")])
 
-# Step 3: Apply transformations and upload transformed video
+# Step 3: Upload the video to cloudinary
 - tool: cloudinary_upload
   arguments:
-    file: '_0.video_url'
-    public_id: '_0.public_id'
+    file: $ steps[0].input.video_url
+    public_id: $ steps[0].input.public_id
     upload_params:
-      transformation: '_.model_transformation'
-      resource_type: "'video'"
+      transformation: $ _.model_transformation
+      resource_type: video
 
-# Step 4: Get transformed video URL
+# Step 4: Return the transformed video url
 - evaluate:
-    transformed_video_url: '_.url'
+    transformed_video_url: $ _.url
