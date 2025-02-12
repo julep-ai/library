@@ -1,14 +1,24 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
-name: browser_task
+name: Browser Task
+description: A sophisticated browser automation task that interacts with web pages using natural language instructions.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
     goal:
       type: string
+      description: The goal or task to accomplish using the browser
   required:
     - goal
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
   - name: create_browserbase_session
     type: integration
@@ -19,86 +29,79 @@ tools:
         api_key: "DEMO_API_KEY"
         project_id: "DEMO_PROJECT_ID"
 
-- name: get_session_view_urls
-  type: integration
-  integration:
-    provider: browserbase
-    method: get_live_urls
-    setup:
-      api_key: "DEMO_API_KEY"
-      project_id: "DEMO_PROJECT_ID"
+  - name: get_session_view_urls
+    type: integration
+    integration:
+      provider: browserbase
+      method: get_live_urls
+      setup:
+        api_key: "DEMO_API_KEY"
+        project_id: "DEMO_PROJECT_ID"
 
-- name: perform_browser_action
-  type: integration
-  integration:
-    provider: remote_browser
-    method: perform_action
-    setup:
-      width: 1024
-      height: 768
+  - name: perform_browser_action
+    type: integration
+    integration:
+      provider: remote_browser
+      method: perform_action
+      setup:
+        width: 1024
+        height: 768
 
-- name: create_julep_session
-  type: system
-  system:
-    resource: session
-    operation: create
+  - name: create_julep_session
+    type: system
+    system:
+      resource: session
+      operation: create
 
-- name: session_chat
-  type: system
-  system:
-    resource: session
-    operation: chat
+  - name: session_chat
+    type: system
+    system:
+      resource: session
+      operation: chat
 
-########################################################
-################### INPUT SCHEMA #######################
-########################################################
-
-########################################################
-################### MAIN WORKFLOW ######################
-########################################################
-
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
 
-# Step #0
+# Step 0: Create Julep session
 - tool: create_julep_session
   arguments:
     agent: str(agent.id)
     situation: "'Juelp Browser Use Agent'"
     recall: 'False'
 
-# Step #1
+# Step 1: Store Julep session ID
 - evaluate:
     julep_session_id: _.id
 
-# Step #2
+# Step 2: Create browser session
 - tool: create_browserbase_session
   arguments:
     project_id: "'DEMO_PROJECT_ID'"
 
-# Step #3
+# Step 3: Store browser session details
 - evaluate:
     browser_session_id: _.id
     connect_url: _.connect_url
 
-# Step #4
+# Step 4: Get session view URLs
 - tool: get_session_view_urls
   arguments:
     id: _.browser_session_id
 
-# Step #5
+# Step 5: Store debugger URL
 - evaluate:
     debugger_url: _.urls.debuggerUrl
 
-# Step #6
-# Navigate to google to avoid sending a blank 
-# screenshot when computer use starts
+# Step 6: Initialize browser with Google homepage
 - tool: perform_browser_action
   arguments:
     connect_url: outputs[3].connect_url
     action: "'navigate'"
     text: "'https://www.google.com'"
 
-# Step #7
+# Step 7: Start browser interaction workflow
 - workflow: run_browser
   arguments:
     julep_session_id: outputs[1].julep_session_id
@@ -119,22 +122,22 @@ main:
         </SYSTEM_CAPABILITY>
         <GOAL>
         *""" + inputs[0].goal + NEWLINE + "</GOAL>"
-    workflow_label: "'run_browser'" # <----- REMOVE THIS
+    workflow_label: "'run_browser'"
 
-
-########################################################
-################# RUN BROWSER WORKFLOW #################
-########################################################
+################################################################################
+############################# RUN BROWSER WORKFLOW #############################
+################################################################################
 
 run_browser:
 
+# Step 0: Process chat messages with session
 - tool: session_chat
   arguments:
     session_id: _.julep_session_id
     messages: _.messages
     recall: 'False'
 
-# Evaluate the response from the agent
+# Step 1: Evaluate agent response
 - evaluate:
     content: _.choices[0].message.content
     tool_calls: "[ \
@@ -146,8 +149,7 @@ run_browser:
       } \
       for tool_call in _.choices[0].message.tool_calls or [] if tool_call.type == 'function']"
 
-
-# Perform the actions requested by the agent
+# Step 2: Execute browser actions
 - foreach:
     in: _.tool_calls
     do:
@@ -158,11 +160,7 @@ run_browser:
         text: _.get('text')
         coordinate: _.get('coordinate')
 
-# ----------------------------------------------------------------
-# Convert the result of the actions into a chat message
-# ----------------------------------------------------------------
-
-# Handle image content part
+# Step 3: Process action results
 - evaluate:
     contents: "[\
       { \
@@ -177,25 +175,24 @@ run_browser:
       } \
       for result in _]"
 
+# Step 4: Format messages
 - evaluate:
     messages: "[{'content': [_.contents[i]], 'role': 'tool', 'name': 'computer', 'tool_call_id': outputs[1].tool_calls[i].tool_call_id} for i in range(len(_.contents))]"
-# ----------------------------------------------------------------
-# Check if the goal is achieved and recursively run the browser
-# ----------------------------------------------------------------
 
+# Step 5: Check goal completion
 - workflow: check_goal_status
   arguments:
     messages: _.messages
     julep_session_id: inputs[0].julep_session_id
     cdp_url: inputs[0].cdp_url
-    workflow_label: "'check_goal_status'" 
+    workflow_label: "'check_goal_status'"
 
-
-########################################################
-############## CHECK GOAL STATUS WORKFLOW ##############
-########################################################
+################################################################################
+############################# CHECK GOAL STATUS WORKFLOW #######################
+################################################################################
 
 check_goal_status:
+# Step 0: Continue browser workflow if messages exist
 - if: len(_.messages) > 0
   then:
     workflow: run_browser
@@ -203,4 +200,4 @@ check_goal_status:
       messages: _.messages
       julep_session_id: _.julep_session_id
       cdp_url: _.cdp_url
-      workflow_label: "'run_browser'" 
+      workflow_label: "'run_browser'"

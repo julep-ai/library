@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Crawling Task
+description: A web crawler that intelligently extracts and summarizes content from specified websites.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -8,7 +12,11 @@ input_schema:
       type: string
       description: The url of the website to crawl
 
-# Define the tools that the agent will use in this workflow
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: spider_crawler
   type: integration
@@ -17,10 +25,12 @@ tools:
     setup:
       spider_api_key: "DEMO_API_KEY"
 
-# Define the steps of the workflow
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
 
-# Define a tool call step that calls the spider_crawler tool with the url input
+# Step 0: Crawl the website using spider crawler
 - tool: spider_crawler
   arguments:
     url: "_['url']" # You can also use 'inputs[0]['url']'
@@ -33,7 +43,7 @@ main:
       filter_output_svg: "True"
       readability: "True"
 
-# Evaluate step to create a summary of the results
+# Step 1: Process and combine crawled content
 - evaluate:
     documents: |
       " ".join(
@@ -42,6 +52,7 @@ main:
         )
       )
     
+# Step 2: Generate summary of crawled content
 - prompt: |
     You are {{agent.about}}
     I have given you this url: {{inputs[0]['url']}}

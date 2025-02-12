@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Tourist Plan With Weather And Attractions
+description: Create detailed travel itineraries considering weather conditions and local attractions for multiple locations.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -10,6 +14,11 @@ input_schema:
         type: string
       description: The locations to search for.
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: wikipedia
   type: integration
@@ -30,19 +39,25 @@ tools:
     setup:
       api_key: "DEMO_API_KEY"
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Get weather information for all locations
 - over: inputs[0].locations
   map:
     tool: weather
     arguments:
       location: _
 
+# Step 1: Search for tourist attractions in each location
 - over: inputs[0].locations
   map:
     tool: internet_search
     arguments:
       query: "'tourist attractions in ' + _"
 
+# Step 2: Combine location data
 # Zip locations, weather, and attractions into a list of tuples [(location, weather, attractions)]
 - evaluate:
     zipped: |-
@@ -54,7 +69,7 @@ main:
         )
       )
 
-
+# Step 3: Generate detailed itineraries for each location
 - over: _['zipped']
   parallelism: 3
   # Inside the map step, each `_` represents the current element in the list
@@ -77,6 +92,7 @@ main:
         Attractions: "{{_[2]}}"
     unwrap: true
 
+# Step 4: Format and combine all itineraries
 - evaluate:
     final_plan: |-
       '\\n---------------\\n'.join(activity for activity in _)

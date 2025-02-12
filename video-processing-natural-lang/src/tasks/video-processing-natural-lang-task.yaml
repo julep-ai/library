@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Video Processing With Natural Language
+description: Process and transform videos using natural language instructions through Cloudinary's powerful media transformation capabilities.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -14,6 +18,11 @@ input_schema:
       type: string
       description: The prompt for the transformations to apply to the file
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: cloudinary_upload
   type: integration
@@ -25,7 +34,11 @@ tools:
       cloudinary_api_secret: "DEMO_API_SECRET"
       cloudinary_cloud_name: "DEMO_CLOUD_NAME"
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Upload original video to Cloudinary
 - tool: cloudinary_upload
   arguments:
     file: '_0.video_url'
@@ -33,6 +46,7 @@ main:
     upload_params:
       resource_type: "'video'"
 
+# Step 1: Generate transformation instructions from natural language prompt
 - prompt:
   - role: user
     content:
@@ -78,10 +92,11 @@ main:
   settings:
     model: gemini/gemini-1.5-pro
 
-# Extract the json from the model's response
+# Step 2: Parse transformation JSON from model response
 - evaluate:
     model_transformation: load_json(_[_.find("```json")+7:][:_[_.find("```json")+7:].find("```")])
 
+# Step 3: Apply transformations and upload transformed video
 - tool: cloudinary_upload
   arguments:
     file: '_0.video_url'
@@ -90,5 +105,6 @@ main:
       transformation: '_.model_transformation'
       resource_type: "'video'"
 
+# Step 4: Get transformed video URL
 - evaluate:
     transformed_video_url: '_.url'

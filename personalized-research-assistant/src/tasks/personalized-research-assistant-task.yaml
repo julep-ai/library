@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Personalized Research Paper Recommendation Assistant
+description: A sophisticated assistant that recommends research papers based on user interests and latest developments in specified topics.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -13,6 +17,11 @@ input_schema:
       type: string
       description: The user id to search for.
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
                           
 - name: brave_search
@@ -76,9 +85,12 @@ tools:
     subresource: doc
     operation: create
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
 
-# Calling brave search for each topic
+# Step 0: Search for latest news on each topic
 - over: _.topics
   parallelism: 2
   map:
@@ -86,7 +98,7 @@ main:
     arguments:
       query: "'the latest news about ' + _"
 
-# Prompting the agent to extract keywords from the news snippet
+# Step 1: Extract keywords from news snippets
 - prompt:
   - role: system
     content: |
@@ -103,11 +115,11 @@ main:
       Example: `KEYWORDS: keyword1, keyword2, keyword3`
   unwrap: true
 
-# Extracting the top 8 keywords
+# Step 2: Process and limit keywords
 - evaluate:
     keywords: str(_).split(',')[:8]
 
-# Calling arxiv search for each keyword
+# Step 3: Search arxiv for each keyword
 - over: _.keywords
   parallelism: 4
   map:
@@ -116,11 +128,11 @@ main:
       query: _
       max_results: "2"
 
-# Get the arxiv results
+# Step 4: Collect arxiv results
 - evaluate:
     arxiv_results: _
                           
-# Get the user from the id using metadata_filter (returns a list)
+# Step 5: Fetch user information
 - tool: get_user_from_id
   arguments:
     limit: "1"
@@ -129,11 +141,11 @@ main:
     metadata_filter:
       ppid: inputs[0]['user_id']
 
-# Unwrap the list to get the user
+# Step 6: Process user information
 - evaluate:
     user_info: _[0]
 
-# Get the user persona from user docs
+# Step 7: Fetch user persona
 - tool: get_user_docs
   arguments:
     user_id: inputs[0]['user_id']
@@ -141,11 +153,11 @@ main:
     sort_by: "'created_at'"
     direction: "'desc'"
 
-# Unwrap the list to get the user persona
+# Step 8: Extract user persona
 - evaluate:
     persona: _[0].content[0]
 
-# Prompting the agent to select the top 5 papers
+# Step 9: Select top papers based on user persona
 - prompt:
   - role: system
     content: |
@@ -172,7 +184,7 @@ main:
       Example: `Title1,url1,,Title2,url2,,Title3,url3`
   unwrap: true
 
-# Extracting the titles and urls
+# Step 10: Process selected papers
 - evaluate:
     paper_titles_and_urls: |-
       list(
@@ -182,7 +194,7 @@ main:
         )
       )
                           
-# Calling llama parse scrape for each url
+# Step 11: Fetch paper contents
 - over: _['paper_titles_and_urls']
   parallelism: 5
   map:
@@ -193,11 +205,11 @@ main:
       params:
         result_format: "'text'"
 
-# Extracting the paper contents
+# Step 12: Process paper contents
 - evaluate:
     paper_contents: str(_)
 
-# Create a new persona document
+# Step 13: Create user document with recommendations
 - tool: create_user_doc
   arguments:
     user_id: inputs[0]['user_id']

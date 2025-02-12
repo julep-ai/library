@@ -1,18 +1,31 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Julep Email Assistant
+description: An intelligent email assistant that processes inquiries and generates responses using documentation.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
     from:
       type: string
+      description: The email address of the sender
     to:
       type: string
+      description: The email address of the recipient
     subject:
       type: string
+      description: The subject of the email
     body:
       type: string
+      description: The body content of the email
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: send_email
   type: integration
@@ -31,7 +44,11 @@ tools:
     subresource: doc
     operation: search
     
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Generate search query from email content
 - prompt: |-
     You are {{ agent.name }}. {{ agent.about }}
 
@@ -47,11 +64,13 @@ main:
 
   unwrap: true
 
+# Step 1: Search documentation with generated query
 - tool: search_docs
   arguments:
     agent_id: "agent.id"
     text: _
     
+# Step 2: Generate response using documentation
 - prompt: |-
     You are {{ agent.name }}. {{ agent.about }}
 
@@ -77,10 +96,12 @@ main:
     
   unwrap: true
   
+# Step 3: Extract response components
 - evaluate:
     subject: "load_json(_.split('```json')[1].split('```')[0])['subject']"
     body: "load_json(_.split('```json')[1].split('```')[0])['body']"
     
+# Step 4: Send response email
 - tool: send_email
   arguments:
     body: _.body
