@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Trending Reels Hook Generator
+description: Generate engaging hooks for trending reels based on a given topic.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -8,6 +12,11 @@ input_schema:
       type: string
       description: The topic to generate trending reels for
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: api_tool_call
   type: api_call
@@ -26,13 +35,18 @@ tools:
     subresource: doc
     operation: list
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
 
+# Step 0: Fetch trending reels data for the topic
 - tool: api_tool_call
   arguments:
     params:
       hashtag: "inputs[0].topic"
 
+# Step 1: Extract and process relevant information from the response
 - evaluate:
     summary:  "list({
                       'caption': ((response.get('caption') or {}).get('text') or 'No Caption Available'),
@@ -54,6 +68,7 @@ main:
                       'video_duration': (response.get('video_duration') or 0)
                       } for response in _['json']['data']['items'])"  
 
+# Step 2: Generate descriptions for each trending reel
 - over: _['summary']
   parallelism: 4
   map:
@@ -70,10 +85,12 @@ main:
           Provide a json repsonse containing the caption, virality score, enagement score and one-liner description for the reel.
     unwrap: true   
 
+# Step 3: Process and format the descriptions
 - evaluate:
     summary: outputs[1]['summary']
     description: list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
 
+# Step 4: Fetch hook templates
 - tool: get_hooks_doc
   arguments:
     agent_id: "agent.id"
@@ -81,6 +98,7 @@ main:
 - evaluate:
     hooks_doc: _[0]['content']
 
+# Step 5: Generate hooks for each reel
 - over: outputs[3]['description']
   parallelism: 4
   map:
@@ -107,6 +125,7 @@ main:
           Provide a json repsonse containing the caption, virality score, enagement score, description and the list of 3 hooks for the reel.
     unwrap: true
 
+# Step 6: Process and format the final output
 - evaluate:
     summary: outputs[3]['summary']
     hooks: list(load_json(res.replace("```json", "").replace("```", "")) for res in _)
