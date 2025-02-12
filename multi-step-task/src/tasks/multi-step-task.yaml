@@ -32,38 +32,47 @@ main:
 # Step 0: Generate initial research questions
 - prompt:
   - role: system
-    content: "You are a research assistant. Your task is to formulate three specific research questions about the given topic: {{inputs[0].topic}}"
+    content: >-
+      $ f'''
+      You are a research assistant. Your task is to formulate three specific research questions about the given topic: {steps[0].input.topic}'''
   unwrap: true
 
 # Step 1: Web search for each question
 - foreach:
-    in: _.split('\\n')
+    in: $ _.split('\\n')
     do:
       tool: web_search
       arguments:
-        query: _
+        query: $ _
 
 # Step 2: Extract relevant information
 - evaluate:
-    relevant_info: "[output for output in _]"
+    relevant_info: $ [output for output in _]
 
 # Step 3: Process and summarize information
-- if: "len(_.relevant_info) >= 3"
+- if: $ len(_.relevant_info) >= 3
   then:
       prompt:
       - role: system
-        content: "Summarize the following information about {{inputs[0].topic}}:\n{{_.relevant_info}}"
+        content: >-
+          $ f'''
+          Summarize the following information about {steps[0].input.topic}:
+          {_.relevant_info}'''
       unwrap: true
   else:
       prompt:
       - role: system
-        content: "Not enough information gathered. Please provide a brief overview of {{inputs[0].topic}} based on your knowledge."
+        content: >-
+          $ f'''
+          Not enough information gathered. Please provide a brief overview of {steps[0].input.topic} based on your knowledge.'''
       unwrap: true
 
 # Step 4: Record the summary
-- log: "Summary for {{inputs[0].topic}}: {{_}}"
+- log: >-
+    $ f'''
+    Summary for {steps[0].input.topic}: {_}'''
 
 # Step 5: Prepare final output
 - return: 
-    summary: "_"
-    topic: "inputs[0].topic"
+    summary: $ _
+    topic: $ steps[0].input.topic

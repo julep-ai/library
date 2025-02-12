@@ -48,86 +48,88 @@ main:
 # Step 0: Fetch user information using PPID
 - tool: get_user_from_ppid
   arguments:
-    limit: "1"
-    sort_by: "'created_at'"
-    direction: "'desc'"
+    limit: $ 1 # <--- 1
+    sort_by: created_at
+    direction: desc
     metadata_filter:
-      ppid: inputs[0]['user_ppid']
+      ppid: $ steps[0].input.user_ppid # or _.user_ppid
 
 # Step 1: Extract user details
 - evaluate:
-    user: _[0]
+    user: $ _[0]
 
 # Step 2: Fetch user documents
 - tool: get_user_docs
   arguments:
-    user_id: _.user.id
     limit: "1"
-    sort_by: "'created_at'"
-    direction: "'desc'"
+    sort_by: created_at
+    user_id: $ _.user.id
+    direction: desc
 
 # Step 3: Extract user persona and embeddings
 - evaluate:
-    user_embedding: _[0].embeddings
-    persona: _[0].content
+    user_embedding: $ _[0].embeddings
+    persona: $ _[0].content
 
 # Step 4: Search for relevant articles using embeddings
 - tool: search_agent_docs
   arguments:
-    vector: _.user_embedding[0]
-    text: _.persona[0]
-    # confidence: "0.01"
-    # mmr_strength: inputs[0]['mmr_strength']
-    # alpha: "0.5"
-    agent_id: inputs[0]['agent_id']
+    vector: $ _.user_embedding
+    agent_id: $ agent.id
+    confidence: $ 0.2
+    mmr_strength: $ 0.9
 
 # Step 5: Process search results
-- if: "len(_['docs']) > 0"
+- if: $ len(_['docs']) > 0
   then:
     evaluate:
-      top_titles: "[doc['title'] for doc in _['docs'][:50]]"
+      top_titles: $ [doc['title'] for doc in _['docs'][:50]]
   else:
     return:
-      newsletter_title: "'No recommendations found'"
+      newsletter_title: "No recommendations found"
       titles: "[]"
           
 # Step 6: Rank and select top articles
 - prompt: 
     - role: user
       content: >-
+        $ f"""
         I'm going to provide you with information about one user of my website, along with a list of titles for sport news articles.
         I want you to rank the news articles according to the users' persona and give me the top 5 as valid yaml with a field called 'articles' that contains a list of the top 5 titles.
         You should diversify the articles to include different sports (don't recommend the same sport twice unless there's no other choice).
         Note: You should always favor using double quotes over single quotes in the elements of the yaml list.
         Here's the user persona:
 
-        {{outputs[3].persona}}
+        {steps[3].output.persona}
 
         Here's the list of titles:
 
-        {{_.top_titles}}
+        {_.top_titles}
+        """
   unwrap: true
       
 # Step 7: Extract ranked titles
 - evaluate:
-    titles: load_yaml(_[_.find("```yaml")+7:_.rfind("```")].strip())['articles']
+    titles: $ load_yaml(_[_.find("```yaml")+7:_.rfind("```")].strip())['articles']
       
 # Step 8: Generate newsletter title
 - prompt: 
     - role: user
       content: >-
+        $ f"""
         based on these 5 titles for sports news articles:
-         {{_['titles']}} 
+         {_['titles']} 
          
          And based on this users persona: 
          
-         {{outputs[3]['persona']}}
+         {steps[3].output.persona}
          
          I want you to draft a catchy newsletter title. Provide only the title and nothing else.
+         """
   unwrap: true
   tool_choice: none
 
 # Step 9: Prepare final output
 - evaluate:
     newsletter_title: _
-    titles: outputs[7].get('titles', [])
+    titles: $ steps[7].output.get('titles', [])

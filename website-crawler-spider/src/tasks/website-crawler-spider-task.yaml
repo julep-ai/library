@@ -33,20 +33,20 @@ main:
 # Step 0: Crawl the website using spider crawler
 - tool: spider_crawler
   arguments:
-    url: "_['url']" # You can also use 'inputs[0]['url']'
+    url: $ _.url # You can also use 'steps[0].input.url'
     params:
-      request: "'smart_mode'"
-      limit: "1"
-      return_format: "'markdown'"
-      proxy_enabled: "True"
-      filter_output_images: "True"
-      filter_output_svg: "True"
-      readability: "True"
+      request: smart_mode
+      limit: $ 1
+      return_format: markdown
+      proxy_enabled: $ True
+      filter_output_images: $ True
+      filter_output_svg: $ True
+      readability: $ True
 
 # Step 1: Process and combine crawled content
 - evaluate:
     documents: |
-      " ".join(
+      $ " ".join(
       list(
         page['content'] for page in _['result']
         )
@@ -54,10 +54,11 @@ main:
     
 # Step 2: Generate summary of crawled content
 - prompt: |
-    You are {{agent.about}}
-    I have given you this url: {{inputs[0]['url']}}
+    $ f"""
+    You are {agent.about}
+    I have given you this url: {steps[0].input.url}
     And you have crawled that website. Here are the results you found:
-    {{_['documents']}}
+    {_['documents']}
     I want you to create a short summary (no longer than 100 words) of the results you found while crawling that website.
-
-  unwrap: True
+    """
+  unwrap: true

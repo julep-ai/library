@@ -32,24 +32,26 @@ tools:
 ################################################################################
 main:
 # Step 0: Search for latest news on each topic
-- over: _.topics
+- over: $ _.topics
   map:
     tool: brave_search
     arguments:
-      query: "'the latest news about ' + _"
+      query: $ 'the latest news about ' + _
 
 # Step 1: Extract Wikipedia keywords from news content
-- over: _
+- over: $ _
   parallelism: 2
   map:
     prompt:
     - role: system
       content: >-
+        $ f'''
         You are a research assistant.
         I need you to do in-depth research on topics trending in the news currently.
         Based on the following latest html news snippet, come up with a list of wikipedia keywords to search:
-        "{{_}}"
+        {_}
         Your response should be a list of keywords, separated by commas. Do not add any other text.
         Example: `KEYWORDS: keyword1, keyword2, keyword3`
+        '''
 
     unwrap: true
