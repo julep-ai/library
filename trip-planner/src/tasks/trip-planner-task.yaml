@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Tourist Plan With Weather And Attractions
+description: Create detailed travel itineraries considering weather conditions and local attractions for multiple locations.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -10,6 +14,11 @@ input_schema:
         type: string
       description: The locations to search for.
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: wikipedia
   type: integration
@@ -30,32 +39,37 @@ tools:
     setup:
       api_key: "DEMO_API_KEY"
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
-- over: inputs[0].locations
+# Step 0: Fetch weather data for each location
+- over: $ steps[0].input.locations
   map:
     tool: weather
     arguments:
-      location: _
+      location: $ _
 
-- over: inputs[0].locations
+# Step 1: Search Wikipedia for tourist attractions for each location
+- over: $ steps[0].input.locations
   map:
     tool: internet_search
     arguments:
-      query: "'tourist attractions in ' + _"
+      query: $ 'tourist attractions in ' + _
 
-# Zip locations, weather, and attractions into a list of tuples [(location, weather, attractions)]
+# Step 2: Zip locations, weather, and attractions into a list of tuples [(location, weather, attractions)]
 - evaluate:
     zipped: |-
-      list(
+      $ list(
         zip(
-          inputs[0].locations,
-          [output['result'] for output in outputs[0]],
-          outputs[1]
+          steps[0].input.locations,
+          [output['result'] for output in steps[0].output],
+          steps[1].output
         )
       )
 
-
-- over: _['zipped']
+# Step 3: Create an itinerary for each location
+- over: $ _['zipped']
   parallelism: 3
   # Inside the map step, each `_` represents the current element in the list
   # which is a tuple of (location, weather, attractions)
@@ -63,20 +77,21 @@ main:
     prompt:
     - role: system
       content: >-
-        You are {{agent.name}}. Your task is to create a detailed itinerary
+        $ f'''You are {agent.name}. Your task is to create a detailed itinerary
         for visiting tourist attractions in some locations.
         The user will give you the following information for each location:
 
         - The location
         - The current weather condition
-        - The top tourist attractions
+        - The top tourist attractions'''
     - role: user
       content: >-
-        Location: "{{_[0]}}"
-        Weather: "{{_[1]}}"
-        Attractions: "{{_[2]}}"
+        $ f'''Location: "{_[0]}"
+        Weather: "{_[1]}"
+        Attractions: "{_[2]}"'''
     unwrap: true
 
+# Step 4: Create a final plan by joining the activities for each location
 - evaluate:
     final_plan: |-
-      '\\n---------------\\n'.join(activity for activity in _)
+      $ '\\n---------------\\n'.join(activity for activity in _)

@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
-name: Comprehensive Analysis Report
+name: Julep Comprehensive Analysis Report
+description: Create a comprehensive analysis report on the given topic and location.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -11,6 +15,11 @@ input_schema:
       type: string
       description: A location related to the topic for weather and news analysis.
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: brave_search
   type: integration
@@ -31,23 +40,31 @@ tools:
   integration:
     provider: wikipedia
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Get the latest developments on the topic from Brave Search
 - tool: brave_search
   arguments:
-    query: "inputs[0].topic + ' latest developments'"
+    query: $ steps[0].input.topic + " latest developments"
 
+# Step 1: Get the weather data for the location
 - tool: weather
   arguments:
-    location: inputs[0].location
+    location: $ steps[0].input.location
 
+# Step 2: Get the Wikipedia data for the topic
 - tool: wikipedia
   arguments:
-    query: inputs[0].topic
+    query: $ steps[0].input.topic
 
+# Step 3: Create the comprehensive analysis report
 - prompt:
   - role: system
     content: >-
-      You are a comprehensive analyst. Your task is to create a detailed report on the topic {{inputs[0].topic}} 
+      $ f"""
+      You are a comprehensive analyst. Your task is to create a detailed report on the topic {steps[0].input.topic} 
       using the information gathered from various sources. Include the following sections in your report:
       
       1. Overview (based on Wikipedia data)
@@ -57,9 +74,10 @@ main:
       
       Use the following data for your report:
       
-      Brave Search Results: {{outputs[0]}}
-      Weather Data: {{outputs[1]}}
-      Wikipedia Data: {{outputs[2]}}
+      Brave Search Results: {steps[0].output}
+      Weather Data: {steps[1].output}
+      Wikipedia Data: {steps[2].output}
       
       Provide a well-structured, informative report that synthesizes information from all these sources.
+      """
   unwrap: true

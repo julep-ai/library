@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Crawling Task
+description: A web crawler that intelligently extracts and summarizes content from specified websites.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -8,7 +12,11 @@ input_schema:
       type: string
       description: The url of the website to crawl
 
-# Define the tools that the agent will use in this workflow
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: spider_crawler
   type: integration
@@ -17,36 +25,40 @@ tools:
     setup:
       spider_api_key: "DEMO_API_KEY"
 
-# Define the steps of the workflow
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
 
-# Define a tool call step that calls the spider_crawler tool with the url input
+# Step 0: Crawl the website using spider crawler
 - tool: spider_crawler
   arguments:
-    url: "_['url']" # You can also use 'inputs[0]['url']'
+    url: $ _.url # You can also use 'steps[0].input.url'
     params:
-      request: "'smart_mode'"
-      limit: "1"
-      return_format: "'markdown'"
-      proxy_enabled: "True"
-      filter_output_images: "True"
-      filter_output_svg: "True"
-      readability: "True"
+      request: smart_mode
+      limit: $ 1
+      return_format: markdown
+      proxy_enabled: $ True
+      filter_output_images: $ True
+      filter_output_svg: $ True
+      readability: $ True
 
-# Evaluate step to create a summary of the results
+# Step 1: Process and combine crawled content
 - evaluate:
     documents: |
-      " ".join(
+      $ " ".join(
       list(
         page['content'] for page in _['result']
         )
       )
     
+# Step 2: Generate summary of crawled content
 - prompt: |
-    You are {{agent.about}}
-    I have given you this url: {{inputs[0]['url']}}
+    $ f"""
+    You are {agent.about}
+    I have given you this url: {steps[0].input.url}
     And you have crawled that website. Here are the results you found:
-    {{_['documents']}}
+    {_['documents']}
     I want you to create a short summary (no longer than 100 words) of the results you found while crawling that website.
-
-  unwrap: True
+    """
+  unwrap: true

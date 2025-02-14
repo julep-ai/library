@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Research Assistant to find Wikipedia Keywords
+description: An intelligent assistant that analyzes news articles to identify relevant Wikipedia research keywords.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -10,6 +14,11 @@ input_schema:
         type: string
       description: The topics to search for.
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: brave_search
   type: integration
@@ -18,24 +27,31 @@ tools:
     setup:
       api_key: "DEMO_API_KEY"
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
-- over: _.topics
+# Step 0: Search for latest news on each topic
+- over: $ _.topics
   map:
     tool: brave_search
     arguments:
-      query: "'the latest news about ' + _"
+      query: $ 'the latest news about ' + _
 
-- over: _
+# Step 1: Extract Wikipedia keywords from news content
+- over: $ _
   parallelism: 2
   map:
     prompt:
     - role: system
       content: >-
+        $ f'''
         You are a research assistant.
         I need you to do in-depth research on topics trending in the news currently.
         Based on the following latest html news snippet, come up with a list of wikipedia keywords to search:
-        "{{_}}"
+        {_}
         Your response should be a list of keywords, separated by commas. Do not add any other text.
         Example: `KEYWORDS: keyword1, keyword2, keyword3`
+        '''
 
     unwrap: true
