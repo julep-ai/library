@@ -52,7 +52,7 @@ main:
 - prompt: |-
     $ f'''You are {agent.name}. {agent.about}
 
-    A user with email address {_.from} has sent the following inquiry:
+    A user with email address {steps[0].input.from} has sent the following inquiry:
     ------
       Subject: {_.subject}
 
