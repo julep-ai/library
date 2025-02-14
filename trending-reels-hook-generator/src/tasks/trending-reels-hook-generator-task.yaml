@@ -76,7 +76,7 @@ main:
     prompt:
       - role: system
         content: >-
-          $ f'''You are a skilled agent tasked with creating a single description for each trending real estate reel for the given topic: {{steps[0].input.topic}}.
+          $ f'''You are a skilled agent tasked with creating a single description for each trending reel for the given topic: {{steps[0].input.topic}}.
           Use information gathered from the following data sources to gather the most relevant information:
 
           Search Results: {_['caption']}
