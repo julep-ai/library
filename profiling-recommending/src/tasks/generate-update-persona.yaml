@@ -1,21 +1,30 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
-name: generate_update_persona
+name: Generate and Update User Persona
+description: A sophisticated system that generates and updates detailed user personas based on reading history and behavior.
 
-# Define the input schema for the workflow
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
     user_ppid:
       type: string
+      description: The unique identifier for the user
     articles_read:
       type: array
       items:
         type: string
+      description: List of articles the user has read
   required:
     - user_ppid
     - articles_read
 
-# Define the tools that are going to be used in the workflow
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
   - name: get_user_from_ppid
     description: Get a user from the user ppid
@@ -40,107 +49,83 @@ tools:
       subresource: doc
       operation: create
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
-  # Get the user from the ppid using metadata_filter (returns a list)
-  - tool: get_user_from_ppid
-    arguments:
-      limit: "1"
-      sort_by: "'created_at'"
-      direction: "'desc'"
-      metadata_filter:
-        ppid: inputs[0]['user_ppid']
+# Step 0: Fetch user information using PPID
+- tool: get_user_from_ppid
+  arguments:
+    limit: $ 1 
+    sort_by: created_at
+    direction: desc
+    metadata_filter:
+      ppid: $ steps[0].input.user_ppid # or _.user_ppid
 
-  # Unwrap the list to get the user
-  - evaluate:
-      user: _[0]
+# Step 1: Extract user details
+- evaluate:
+    user: $ _[0] # or steps[0].output[0]
 
+# Step 2: Fetch user's existing persona document
+- tool: list_user_docs
+  arguments:
+    limit: $ 1
+    sort_by: created_at
+    user_id: $ _.user.id # or steps.user.id
+    direction: desc
 
-  # Get the user persona document using metadata_filter (returns a list)
-  - tool: list_user_docs
-    arguments:
-      user_id: _['user']['id']
-      limit: "1"
-      sort_by: "'created_at'"
-      direction: "'desc'"
+# Step 3: Extract existing document if available
+- evaluate:
+    doc: $ _[0] if len(_) > 0 else {}
 
-  # Get the doc if it exists
-  - evaluate:
-      doc: _[0] if len(_) > 0 else {}
+# Step 4: Extract existing persona content
+- evaluate:
+    user_persona: $ _.doc.get('content', "No persona found. The user does not have a persona yet.")
 
+# Step 5: Generate comprehensive user persona
+- prompt:
+    - role: user
+      content: |
+        $ f"""
+        You are an expert at creating user personas for American sports fans. Your task is to write a detailed content interest profile for a user based on their data and article reading history. Follow these instructions carefully:
+        First, review the following information:
+        <user_data> {steps[2].input['user']['metadata']} </user_data>
+        <article_history> {steps[0].input['articles_read']} </article_history>
+        <past_persona> {_['user_persona']} </past_persona>
+        Now, follow these steps to create the content interest profile:
+        1. Analyze the user data, focusing on the "sports_likes", "entity_likes", "top_sport" and "top_entity" fields.
+        2. Review the article reading history and identify common themes among the articles. For example, "The Unknown Petty that took NASCAR World by Storm" would have a theme of "Legends and History".
+        3. Create a detailed content interest profile for the user, covering:
+          - User's key sports interests
+          - User's key article theme interests
+          - Correlations between the user's interests in various topics and sports
 
-  # Get the user persona from the doc if the doc exists
-  - evaluate:
-      user_persona: _['doc'].get('content', "")
+        4. Structure your output as follows:
+          <content_interest_profile>
+          - Primary Interests:
+            [List 2-3 main interests]
+          - Secondary Interests:
+            [List 3-5 secondary interests]
+          - Theme Interests:
+            [List 4-6 theme interests]
+          </content_interest_profile>
 
+        5. When writing the content interest profile:
+          - Be specific and use examples from the provided data
+          - Make logical inferences based on the given information
+          - Ensure consistency throughout the profile
+          - Do not include any additional explanations or commentary
 
-  # Create the user persona using the prompt step
-  - prompt:
-      - role: user
-        content: |
-          You are an expert at creating detailed user personas for sports fans. Your task is to write a comprehensive user persona based on the provided user data and article reads. This persona will help in recommending articles to the user.
+        Remember to focus solely on creating the content interest profile based on the provided information. Do not add any personal opinions or information not derived from the given data.
+        """
+  unwrap: true
+  tool_choice: none  
 
-          #Input#
-          Following is the user data 
-          User details:
-          {{outputs[1].user.metadata}}
-                          
-          User reading history:
-          {{inputs[0].articles_read}}
-          
-          User past persona:
-          {{_.user_persona}}
-
-          #Task#
-          Let's think of the following steps carefully. Using the user data, create a user persona that includes the following sections:
-
-          1. Demographics
-          2. Psychographics
-          3. Content Interests
-
-
-          For each section, follow these process:
-
-          1. Demographics:
-            - Provide the user's age, gender, and location.
-            - If any information is missing, make a reasonable assumption based on other details provided.
-
-          2. Psychographics:
-            - Describe the user's personality traits.
-            - Create an interest graph that shows the user's primary and secondary interests related to sports, sports figures and other relevant areas.
-
-          3. Content Interests:
-            - List and briefly describe the user's thematic interests.
-            - Specify article categories that would appeal to this user.
-            - Identify entity preferences (e.g., specific teams, athletes, or sports figures).
-            - Detail the user's sports preferences, including favorite sports, leagues, and events.
-            - Assess the user's engagement level with sports content (e.g., casual, dedicated, or super-fan).
-            - Draw any correlations between the user's interests in various topics, sports, and entities.
-            - Detail the user's content needs and expectations  
-
-
-          #Instructions#
-
-          When writing the user persona:
-          - Be specific and provide examples where possible.
-          - Make logical inferences based on the given information.
-          - Ensure consistency throughout the persona.
-          - Use bullet points or short paragraphs for easy readability.
-
-          Format your response as follows:
-          - Use headers for each main section (Demographics, Psychographics, Content Interests).
-          - Use subheaders for subsections within Content Interests.
-          - Include a brief introduction and conclusion.
-
-          Present your final user persona within <user_persona> tags. Begin with a concise introduction, then proceed with the detailed sections as outlined above.
-          Your work will be evaluated for comprehensive and detailed persona.
-    unwrap: true
-    tool_choice: none  
-
-  # Create a new persona document
-  - tool: create_user_doc
-    arguments:
-      user_id: inputs[2]['user']['id']
-      data:
-        embed_instruction: "'Represent the query for User persona used for document retrieval: '"
-        title: "'User Persona'"
-        content: _
+# Step 6: Create and store new persona document
+- tool: create_user_doc
+  arguments:
+    data:
+      title: User Persona
+      content: $ _
+      embed_instruction: "Represent the query for retrieving supporting documents: "
+    user_id: $ steps[2].input.user.id

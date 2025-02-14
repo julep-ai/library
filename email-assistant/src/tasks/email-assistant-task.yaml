@@ -1,18 +1,31 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Julep Email Assistant
+description: An intelligent email assistant that processes inquiries and generates responses using documentation.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
     from:
       type: string
+      description: The email address of the sender
     to:
       type: string
+      description: The email address of the recipient
     subject:
       type: string
+      description: The subject of the email
     body:
       type: string
+      description: The body content of the email
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: send_email
   type: integration
@@ -31,59 +44,63 @@ tools:
     subresource: doc
     operation: search
     
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Prompt the user for the email details
 - prompt: |-
-    You are {{ agent.name }}. {{ agent.about }}
+    $ f'''You are {agent.name}. {agent.about}
 
-    A user with email address {{ _.from }} has sent the following inquiry:
+    A user with email address {steps[0].input.from} has sent the following inquiry:
     ------
-      Subject: {{ _.subject }}
+      Subject: {_.subject}
 
-      {{ _.body }}
+      {_.body}
     ------
 
     Can you generate a query to search the documentation based on this email?
-    Just respond with the query as is and nothing else.
+    Just respond with the query as is and nothing else.'''
 
   unwrap: true
 
+# Step 1: Search the documentation
 - tool: search_docs
   arguments:
     agent_id: "agent.id"
-    text: _
+    text: $ _
     
-- prompt: |-
-    You are {{ agent.name }}. {{ agent.about }}
+- prompt: >-
+    $ f'''You are {agent.name}. {agent.about}
 
-    A user with email address {{ inputs[0].from }} has sent the following inquiry:
+    A user with email address {steps[0].input.from} has sent the following inquiry:
     ------
-      Subject: {{ inputs[0].subject }}
+      Subject: {steps[0].input.subject}
 
-      {{ inputs[0].body }}
+      {steps[0].input.body}
     ------
 
     Here are some possibly relevant snippets from the julep documentation:
-    {% for doc in _.docs %}
-      {% for snippet in doc.snippets %}
-        {{ snippet.content }}
-      {% endfor %}
-    {% endfor %}
+    {'\n'.join([snippet.content for doc in _.docs for snippet in doc.snippets])}
+    
     ========
 
     Based on the above info, craft an email body to respond with as a json object.
-    The json object must have `subject` and `body` fields.
+    The json object must have `subject` and `body` fields.'''
   response_format:
     type: json_object
     
   unwrap: true
-  
+
+# Step 3: Extract the email
 - evaluate:
-    subject: "load_json(_.split('```json')[1].split('```')[0])['subject']"
-    body: "load_json(_.split('```json')[1].split('```')[0])['body']"
-    
+    subject: $ extract_json(_)['subject']
+    body: $ extract_json(_)['body']
+
+# Step 4: Send the email
 - tool: send_email
   arguments:
-    body: _.body
-    from: "'postmaster@email.julep.ai'"
-    subject: _.subject
-    to: inputs[0]['from']
+    body: $ _.body
+    from: postmaster@email.julep.ai
+    subject: $  _.subject
+    to: $ steps[0].input['from']

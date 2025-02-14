@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Sarcasm Headline Generator
+description: Generate witty and sarcastic news headlines for given topics with a humorous twist.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
 input_schema:
   type: object
   properties:
@@ -8,6 +12,11 @@ input_schema:
       type: string
       description: The topic to generate a sarcastic headline for
 
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
 tools:
 - name: brave_search
   type: integration
@@ -16,14 +25,22 @@ tools:
     setup:
       api_key: "DEMO_API_KEY"
 
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Search for relevant content about the topic
 - tool: brave_search
   arguments:
-    query: "_.topic + ' funny'"
+    query: $ _.topic + ' funny'
 
+# Step 1: Generate sarcastic headline using search context
 - prompt:
   - role: system
     content: >-
+      $ f'''
       You are a sarcastic news headline writer. Generate a witty and sarcastic headline
-      for the topic {{inputs[0].topic}}. Use the following information for context: {{_}}
+      for the topic {steps[0].input.topic}. Use the following information for context:
+      {_}
+      '''
   unwrap: true

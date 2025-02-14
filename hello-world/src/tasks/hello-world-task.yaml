@@ -1,7 +1,26 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
 name: Hello World
+description: A simple demonstration task that tells a joke to showcase basic task functionality.
 
+################################################################################
+############################# INPUT SCHEMA #####################################
+################################################################################
+input_schema:
+  type: object
+  properties: {}
+
+################################################################################
+############################# TOOLS ############################################
+################################################################################
+
+# Describing the tools that will be used in the workflow
+tools: []
+
+################################################################################
+############################# MAIN WORKFLOW ####################################
+################################################################################
 main:
+# Step 0: Generate a joke
 - prompt:
     - role: system
       content: "You are a helpful assistant"
