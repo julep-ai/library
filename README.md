@@ -34,7 +34,6 @@
   <h3><i>Serverless AI Workflows for Data & ML Teams</i></h3>
 </div>
 
-</div>
 
 ---
 
