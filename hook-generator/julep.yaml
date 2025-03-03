@@ -1,0 +1,6 @@
+agents:
+- definition: "src/agents/hook-generator-agent.yaml"
+
+tasks:
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/hook-generator-task.yaml" 

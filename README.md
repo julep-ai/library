@@ -86,7 +86,8 @@ workflow-name/
 
 ### 🎯 Content & Marketing
 
-- **[Trending Reels Hook Generator](./trending-reels-hook-generator)** - Viral content creation
+- **[Hook Generator](./hook-generator)** - Viral content creation
+- **[Reel Creator](./reel-creator)** - Viral content creation
 - **[Sarcastic Headline Generator](./sarcastic-headline-generator)** - Engaging headline creation
 - **[Profiling and Recommending](./profiling-recommending)** - Profiling and recommending workflow
 

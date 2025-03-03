@@ -1,4 +1,4 @@
-# Trending Reels Hook Generator Workflow
+# Hook Generator Workflow
 
 This workflow generates engaging hooks for trending social media reels based on a given topic.
 
