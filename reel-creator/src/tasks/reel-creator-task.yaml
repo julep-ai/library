@@ -1,0 +1,456 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
+name: Julep Reel Creator
+description: This gets the trending reels from Instagram and generates reels.
+
+########################################################
+####################### INPUT SCHEMA ###################
+########################################################
+input_schema:
+  type: object
+  properties:
+    topic:
+      type: string
+      description: The topic to generate hooks for.
+
+########################################################
+####################### TOOLS ##########################
+########################################################
+
+# Defining the tools that the task will use in this workflow
+tools:
+- name: api_tool_call
+  type: api_call
+  api_call:
+    method: GET
+    url: "https://instagram-scraper-api2.p.rapidapi.com/v1/hashtag"
+    headers: 
+      x-rapidapi-key: "RAPID_API_KEY"
+      x-rapidapi-host: "RAPID_API_HOST"
+    follow_redirects: true
+
+- name: get_page
+  type: api_call
+  api_call:
+    method: GET
+    url: https://r.jina.ai/
+    headers:
+      accept: application/json
+      x-return-format: markdown
+      x-with-images-summary: "true"
+      x-with-links-summary: "true"
+      x-retain-images: none
+      x-no-cache: "true"
+      Authorization: "Bearer JINA_API_KEY"
+
+- name: get_replicate_model
+  type: api_call
+  api_call:
+    method: POST
+    url: "https://api.replicate.com/v1"
+    headers:
+      Content-Type: application/json
+      Prefer: wait
+      Authorization: "Bearer REPLICATE_API_KEY"
+
+- name: get_replicate_url
+  type: api_call
+  api_call:
+    method: GET
+    url: "https://api.replicate.com/v1"
+    headers:
+      Content-Type: application/json
+      Prefer: wait
+      Authorization: "Bearer REPLICATE_API_KEY"
+
+- name: get_hooks_doc
+  type: system
+  system:
+    resource: agent
+    subresource: doc
+    operation: list
+
+- name: create_reel
+  type: api_call
+  api_call:
+    method: POST
+    url: "https://api.shotstack.io/edit/stage/render"
+    headers:
+      content-type: application/json
+      x-api-key: "SHOTSTACK_API_KEY"
+
+- name: get_reel_url
+  type: api_call
+  api_call:
+    method: GET
+    url: "https://api.shotstack.io/edit/stage/render"
+    headers:
+      content-type: application/json
+      x-api-key: "SHOTSTACK_API_KEY"
+
+########################################################
+########## SUB WORKFLOW TO CREATE REEL #################
+########################################################
+
+generate_reel:
+
+# Step 0: Generate the clips for the reel
+- evaluate:
+    clips: |
+      $ [
+        {
+          "clips": [
+                {
+                  "asset": {
+                    "type": "audio",
+                    "src": transcibe_url,
+                    "volume": 1
+                  },
+                  "start": i * 5,
+                  "length": 5,
+                  "transition": {
+                    "in": "fadeFast", 
+                    "out": "fadeFast"
+                  } # Smooth crossfade between audio clips
+                },
+                {
+                  "asset": {
+                      "type": "text",
+                      "text": scene.text_overlay,
+                      "font": {
+                          "family": "Open Sans",
+                          "size": 40,
+                          "weight": "600",
+                          "lineHeight": 1.5,
+                          "color": "#000000", 
+                      },
+                      "stroke": {
+                          "color": "#FFFFFF",
+                          "width": 5
+                      },
+                      "alignment": {
+                          "horizontal": "center",
+                          "vertical": "center"
+                      }
+                  },
+                  "start": i * 5,
+                  "length": 5,
+                  "transition": {
+                        "in": "fadeFast", 
+                        "out": "fadeFast"
+                  },
+                  "opacity": 1 # Ensure text is fully visible
+                },
+                {
+                  "asset": {
+                    "type": "image", 
+                    "src": image_url
+                  },
+                  "start": i * 5,
+                  "length": 5,
+                  "scale": 1.1,
+                  "position": "center",
+                    "fit": "cover",
+                    "effect": "zoomIn",
+                    "transition": {
+                        "in": "fadeFast",
+                        "out": "fadeFast"
+                    }
+                }
+              ]
+        }
+        for i, (image_url, scene, transcibe_url) in enumerate(zip(_.image_urls, _.scenes, _.transcibe_urls))
+        ]
+
+# Step 1: Create the reel
+- tool: create_reel
+  arguments:
+    json: |
+      $ {
+        "timeline": {
+          "soundtrack": {
+            "src": "https://shotstack-assets.s3-ap-southeast-2.amazonaws.com/music/freepd/advertising.mp3",
+            "effect": "fadeInFadeOut",
+            "volume": 0.2
+          },
+          "tracks": steps[0].output.clips
+        },
+        "output": {
+          "format": "mp4", 
+          "fps": 60,
+          "size": {
+            "width": 1280,
+            "height": 720
+          }
+        }
+      }
+
+########################################################
+####################### MAIN WORKFLOW ##################
+########################################################
+
+main:
+
+# Step 0: Get the trending reels from Instagram
+- tool: api_tool_call
+  arguments:
+    params:
+      hashtag: $ steps[0].input.topic
+
+# Step 1: Extract the caption, virality score, engagement score and one-liner description for each reel
+- evaluate:
+    summary: >-
+      $ list({
+                'caption': ((response.get('caption') or {}).get('text') or 'No Caption Available'),
+                'code': (response.get('code') or 'No Code Available'),
+                'play_count': (response.get('play_count') or 0),
+                'like_count': (response.get('like_count') or 0),
+                'media_id': ((response.get('caption') or {}).get('id') or 0),
+                'hashtags': ((response.get('caption') or {}).get('hashtags') or 'No Hashtag Available'),
+                'video_duration': (response.get('video_duration') or 0),
+                'comment_count': (response.get('comment_count') or 0),
+                'reshare_count': (response.get('reshare_count') or 0),
+                'has_audio': (response.get('has_audio') or False),
+                'audio_type': (((response.get('clips_metadata') or {}).get('audio_type')) or 'No Audio Type Available'),
+                'username': (((response.get('user') or {}).get('username')) or 'No Username Available'),
+                'full_name': (((response.get('user') or {}).get('full_name')) or 'No Full Name Available'),
+                'profile_pic_url': (((response.get('user') or {}).get('profile_pic_url')) or 'No Profile Pic URL Available'),
+                'virality_score': (((response.get('reshare_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
+                'engagement_score': (((response.get('like_count') or 0) / (response.get('play_count') or 1)) if (response.get('play_count') or 0) > 0 else 0),
+                'video_duration': (response.get('video_duration') or 0)
+              } for response in _['json']['data']['items']) 
+
+# Step 2: Generate a description for each reel
+- over: $ _['summary'][:3]
+  parallelism: 3
+  map:
+    prompt:
+      - role: system
+        content: >-
+          $ f'''You are a skilled content analyst tasked with analyzing trending reels for the topic: {{steps[0].input.topic}}.
+          Analyze the following metrics to understand what content performs well:
+
+          Caption: {_.caption}
+          Virality Score: {_.virality_score} 
+          Engagement Score: {_.engagement_score}
+          Video Duration: {_.video_duration}
+          Play Count: {_.play_count}
+          Comment Count: {_.comment_count}
+          Reshare Count: {_.reshare_count}
+
+          Return a list of JSON responses and nothing else in the response. The JSON response should contain the following fields:
+          - Key themes and patterns from the caption
+          - What aspects drove virality and engagement
+          - A one-line summary of why this content resonated
+          '''
+    unwrap: true   
+
+# Step 3: Get the trending content analysis
+- evaluate:
+    analysis: $ list(extract_json(res) for res in _)
+
+# Step 4: Get the page content
+- tool: get_page
+  arguments:
+    url: $ "https://r.jina.ai/" + steps[0].input.url
+
+# Step 5: Extract the page content
+- evaluate:
+    content: $ steps[4].output.json.data.content
+
+# Step 6: Create an engaging video script based on trends
+- prompt:
+  - role: system
+    content: >-  
+      You are an expert scriptwriter and visual storyteller. 
+      Transform the provided content into a dynamic, trend-driven script with a flexible scene structure, designed to generate realistic, story-driven images for an engaging video.
+
+  - role: user
+    content: >-
+      $ f'''
+
+      Here are the trending insights:
+      {steps[3].output.analysis}
+
+      Here is the content to adapt:
+      {steps[5].output.content}
+
+      Requirements:
+
+      Create a viral-worthy video script following these guidelines:
+
+      1. Hook viewers instantly with an attention-grabbing opening (3-5 seconds)
+      2. Keep scenes ultra-concise (3-8 seconds each) for short attention spans
+      3. Deliver key points with compelling, punchy narration (2-3 sentences)
+      4. Use quick, dynamic transitions between scenes
+      5. Keep visuals simple and authentic with darker color schemes
+
+      For each scene, provide:
+      - Brief scene description
+      - Engaging narration (2-3 impactful sentences)
+      - Simple image prompt (using darker, moodier colors and lighting)
+      - Bold text overlay (1-5 words)
+      - Quick pacing guidance
+      - Maintain consistent narration length (10-15 words) across scenes for uniform audio generation and smooth transitions
+
+      Return a JSON response following this structure:
+      ```json
+      {{
+        "scenes": [
+            {{
+                "scene": "Brief scene description",
+                "narration": "Compelling and engaging narration that hooks viewers. Follow up with an impactful point.",
+                "image_prompt": "Simple visual description with darker shades, deep shadows, and low-key lighting setup.",
+                "text_overlay": "1-5 word text",
+                "tone": "Quick pacing note", 
+                "start_time": "Start time of the scene in seconds. Return only the number and nothing else",
+                "duration": "Duration of the scene in seconds. Return only the number and nothing else"
+            }},
+            ...(additional scenes as needed)
+        ]
+      }}
+      ```
+      '''
+  unwrap: true
+
+# Step 7: Generate video script
+- evaluate:
+    script: $ extract_json(_)
+
+# Step 8: Generate captions
+- over: $ steps[7].output.script.scenes
+  parallelism: 3
+  map:
+    tool: get_replicate_model
+    arguments:
+      url: https://api.replicate.com/v1/predictions
+      json: 
+        version: "f559560eb822dc509045f3921a1921234918b91739db4bf3daab2169b71c7a13"
+        input:
+          text: $ _.narration
+          voice: am_adam
+          speed: $ 1
+
+# Step 9: Generate the image for each scene
+- over: $ steps[7].output.script.scenes
+  parallelism: 3
+  map:
+    tool: get_replicate_model
+    arguments:
+      url: https://api.replicate.com/v1/models/black-forest-labs/flux-1.1-pro/predictions
+      json: 
+        input:
+          prompt: $ _.image_prompt # + "Add the following text to the image - " + _.text_overlay
+          prompt_upsampling: $ False
+          output_format: png
+          safety_tolerance: $ 2
+          output_quality: $ 100
+          width: $ 1280
+          height: $ 720
+
+# Step 10: Sleep for 90 seconds. Basically, we need to wait for the audio to be generated.
+- sleep:
+    minutes: 1
+    seconds: 30
+
+# Step 11: Get the audio url
+- over: $ steps[8].output
+  parallelism: 3
+  map:
+    tool: get_replicate_url
+    arguments:
+      url: $ _.json.urls['get']
+
+# Step 12: Extract the image url
+- workflow: generate_reel
+  arguments:
+    image_urls: $ [url.json.output for url in steps[9].output]
+    transcibe_urls: $ [url.json.output for url in steps[11].output]
+    effects: $ ["zoomIn", "slideUp", "slideLeft", "zoomOut", "slideDown", "slideRight", "zoomIn"]
+    scenes: $ steps[7].output.script.scenes
+
+# Step 13: Get the video id
+- evaluate:
+    video_json: $ _.json
+
+# Step 14: Sleep for 60 seconds
+- sleep: 
+    minutes: 1
+    seconds: 30
+
+# Step 15: Get the hooks document
+- tool: get_hooks_doc
+  arguments:
+    agent_id: {AGENT_UUID}
+
+# Step 16: Extract the hooks document
+- evaluate:
+    content: $ _[0]['content']
+  label: hooks_doc
+
+# Step 17: Generate the hook for the reel
+- prompt:
+  - role: system
+    content: >-
+      You are an expert social media content creator specializing in viral hooks and engaging captions. 
+      Your expertise lies in crafting compelling, scroll-stopping content that drives high engagement and conversions.
+  
+  - role: user
+    content: >-
+      $ f'''
+      Using the provided hook templates, create high-converting social media content optimized for maximum virality:
+
+      {_.content}
+
+      Based on this script:
+       
+      {steps[7].output.script}
+      
+      Generate a viral social media package with:
+
+      1. Title (max 60 chars):
+         - Use numbers, stats or surprising facts
+         - Create urgency/FOMO
+         - Include power words that trigger emotion
+      
+      2. Caption (2-3 sentences):
+         - Open with a bold claim or question
+         - Build intrigue and curiosity
+         - End with a clear call-to-action
+      
+      3. Description (one line):
+         - Highlight the key transformation/benefit
+         - Use "before vs after" framing
+         - Make it specific and measurable
+
+      Requirements:
+      - Target the core pain point of {{steps[0].input.topic}} users
+      - Use proven psychological triggers (scarcity, social proof, etc.)
+      - Match the hook templates' viral formulas
+      - Optimize for platform-specific engagement metrics
+      - Keep language simple, direct and emotionally resonant
+
+      Format response as:
+      ```json
+      {{
+        "title": "string", // Attention-grabbing headline
+        "caption": "string", // Engaging hook + CTA
+        "description": "string" // Clear value proposition
+      }}
+      ```
+
+      Return the JSON repsonse and nothing else
+      '''
+  unwrap: true
+
+# Step 18: Get the content of the product page
+- tool: get_reel_url
+  arguments:
+    url: $ "https://api.shotstack.io/edit/stage/render/" + steps[13].output.video_json.response.id
+
+# Step 19: Extract the details
+- evaluate:
+    social_media: $ extract_json(steps[17].output)
+    scenes: $ steps[7].output.script.scenes
+    image_urls: $ [url.json.output for url in steps[9].output]
+    transcibe_urls: $ [url.json.output for url in steps[11].output]
+    reel_url: $ _.json.response.url
