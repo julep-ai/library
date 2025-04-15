@@ -111,7 +111,7 @@ main:
     messages:
     - role: "user"
       content: |-
-        $ """
+        $ f"""
         <SYSTEM_CAPABILITY>
         * You are utilising a headless chrome browser to interact with the internet.
         * You can use the computer tool to interact with the browser.
@@ -123,8 +123,8 @@ main:
         * YOU CANNOT WRITE TO THE SEARCH BAR OF THE BROWSER.
         </SYSTEM_CAPABILITY>
         <GOAL>
-        *""" + steps[0].input.goal + NEWLINE + "</GOAL>"
-    workflow_label: "run_browser"
+        * + {steps[0].input.goal} + NEWLINE + </GOAL> """
+    workflow_label: "run_browser" # <----- REMOVE THIS
 
 ################################################################################
 ############################# RUN BROWSER WORKFLOW #############################
@@ -137,7 +137,7 @@ run_browser:
   arguments:
     session_id: $ _.julep_session_id
     messages: $ _.messages
-    recall: 'False'
+    recall: $ False
 
 # Step #1 - Evaluate the response from the agent
 - evaluate:
