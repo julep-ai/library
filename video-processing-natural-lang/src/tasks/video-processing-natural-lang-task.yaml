@@ -61,22 +61,22 @@ main:
           Given below is an example of a transformation json list. Don't provide explanations and/or comments in the json.
           ```json
           [
-            {
+            {{
               "aspect_ratio": "1.0",
               "width": 250,
-            },
-            {
+            }},
+            {{
               "fetch_format": "auto"
-            },
-            {
+            }},
+            {{
               "overlay":
-              {
+              {{
                 "url": "<image_url>"
-              }
-            },
-            {
+              }}
+            }},
+            {{
               "flags": "layer_apply"
-            }
+            }}
           ]
           ```
       - type: image_url
