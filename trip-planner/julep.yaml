@@ -1,3 +1,6 @@
+name: "Trip Planner"
+description: "Generates detailed travel itineraries incorporating weather conditions and tourist attractions for multiple locations with parallel processing"
+
 agents:
 - definition: "src/agents/trip-planner-agent.yaml"
 

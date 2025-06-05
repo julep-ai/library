@@ -1,3 +1,6 @@
+name: "Personalized Research Assistant"
+description: "Recommends research papers tailored to individual user personas by leveraging news search, ArXiv integration, and document parsing"
+
 agents:
 - definition: "src/agents/personalized-research-assistant-agent.yaml"
 

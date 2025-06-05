@@ -1,3 +1,6 @@
+name: "Analyst"
+description: "Creates comprehensive analysis reports using multiple external data sources including web search, weather data, and Wikipedia information"
+
 agents:
 - definition: "src/agents/analyst-agent.yaml"
 

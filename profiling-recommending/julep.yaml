@@ -1,13 +1,16 @@
+name: "Profiling and Recommending"
+description: "Creates user profiles and provides personalized content recommendations using sophisticated persona analysis and content ranking algorithms"
+
 agents:
-- definition: "src/agents/profiler.yaml"
-- definition: "src/agents/recommender.yaml"
+- definition: "src/agents/profiler-agent.yaml"
+- definition: "src/agents/recommender-agent.yaml"
 
 tasks:
 - agent_id: "{agents[0].id}"
-  definition: "src/tasks/generate-update-persona.yaml"
+  definition: "src/tasks/generate-update-persona-task.yaml"
 
 - agent_id: "{agents[1].id}"
-  definition: "src/tasks/recommend-news-articles.yaml"
+  definition: "src/tasks/recommend-news-articles-task.yaml"
 
 tools:
 - agent_id: "{agents[0].id}"

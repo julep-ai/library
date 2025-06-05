@@ -1,3 +1,6 @@
+name: "Website Crawler"
+description: "Performs automated web crawling and content summarization using Spider API integration for efficient content extraction"
+
 agents:
 - definition: "src/agents/website-crawler-spider-agent.yaml"
 

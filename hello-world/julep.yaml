@@ -1,3 +1,6 @@
+name: "Hello World"
+description: "A simple demonstration workflow that logs a basic 'Hello World' message for testing and learning purposes"
+
 agents:
   - definition: "src/agents/hello-world-agent.yaml"
 

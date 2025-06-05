@@ -1,3 +1,6 @@
+name: "Sarcastic Headline Generator"
+description: "Creates witty and sarcastic headlines for any topic by gathering context through web search and applying humor techniques"
+
 agents:
 - definition: "src/agents/sarcastic-headline-generator-agent.yaml"
 
