@@ -1,3 +1,6 @@
+name: "Reel Creator"
+description: "Generates viral social media reels by analyzing trending Instagram content and creating engaging video content with automated scripts, images, and audio"
+
 agents:
 - definition: "src/agents/reel-creator-agent.yaml"
 

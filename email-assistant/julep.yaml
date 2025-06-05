@@ -1,3 +1,6 @@
+name: "Email Assistant"
+description: "Automates email response management by searching documentation and generating contextual replies using Mailgun integration"
+
 agents:
 - definition: "src/agents/email-assistant-agent.yaml"
 

@@ -1,3 +1,6 @@
+name: "Online Researcher"
+description: "Performs intelligent research on trending topics using web search and keyword extraction with parallel processing capabilities"
+
 agents:
 - definition: "src/agents/online-researcher-agent.yaml"
 

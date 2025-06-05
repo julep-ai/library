@@ -1,3 +1,6 @@
+name: "Video Processing with Natural Language"
+description: "Processes videos using natural language prompts by uploading to Cloudinary and generating AI-powered transformations with Gemini 1.5 Pro"
+
 agents:
 - definition: "src/agents/video-processing-natural-lang-agent.yaml"
 

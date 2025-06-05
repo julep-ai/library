@@ -1,3 +1,6 @@
+name: "Multi-Step Task"
+description: "Demonstrates structured research and information synthesis through multi-step web search and summarization processes"
+
 agents:
 - definition: "src/agents/multi-step-agent.yaml"
 

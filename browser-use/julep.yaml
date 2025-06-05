@@ -1,3 +1,6 @@
+name: "Browser Use"
+description: "Enables headless browser automation for web interactions and tasks using Chrome DevTools Protocol with Browserbase integration"
+
 agents:
 - definition: "src/agents/browser-agent.yaml"
 
