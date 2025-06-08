@@ -26,7 +26,7 @@ tools:
   integration:
     provider: brave
     setup:
-      api_key: "DEMO_API_KEY"
+      brave_api_key: "DEMO_API_KEY"
 
 - name: weather
   type: integration
