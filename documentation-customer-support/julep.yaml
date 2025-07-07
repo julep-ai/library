@@ -1,0 +1,9 @@
+name: "Documentation Customer Support"
+description: "An intelligent AI support assistant built with the Julep platform to help developers understand and use Julep effectively"
+
+agents:
+- definition: "src/agents/documentation-customer-support-agent.yaml"
+
+tasks:
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/documentation-customer-support-task.yaml"
