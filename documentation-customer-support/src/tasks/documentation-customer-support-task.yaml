@@ -1,0 +1,272 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/julep-ai/julep/refs/heads/dev/schemas/create_task_request.json
+name: Julep Documentation Crawler Task
+description: A Julep agent that can crawl the Julep documentation website and store the content in the document store with proper contextualization.
+
+########################################################
+################### INPUT SCHEMA #######################
+########################################################
+
+input_schema:
+  type: object
+  properties:
+    url:
+      type: string
+
+########################################################
+################### TOOLS ##############################
+########################################################
+
+tools:
+
+- name: spider_crawler
+  type: integration
+  integration:
+    provider: spider
+    setup:
+      spider_api_key: {spider_api_key}
+
+# tool to create a document for the agent
+- name: create_agent_doc
+  type: system
+  system:
+    resource: agent
+    subresource: doc
+    operation: create
+
+########################################################
+################### PROCESS SINGLE PAGE SUBWORKFLOW ####
+########################################################
+
+process_single_page:
+
+# Step #0 - Create documentation-sized chunks directly
+- evaluate:
+    page_url: $ _["url"]
+    page_content: $ _["content"].strip()
+    # Create ~1500 word chunks with overlap to preserve context.
+    chunks: |
+      $ [" ".join(_.content.strip().split()[i:i + 1500]) 
+        for i in range(0, len(_.content.strip().split()), 1200)]
+
+# Step #1 - Pass to index_page  
+- workflow: index_page
+  arguments:
+    page_url: $ _["page_url"]
+    page_content: $ _["page_content"]
+    chunked: $ _["chunks"]
+
+########################################################
+################### INDEX PAGE SUBWORKFLOW ##############
+########################################################
+
+index_page:
+
+# Step #0 - Analyze and extract structured information from documentation
+- prompt:
+  - role: system
+    content: |-
+      You are a technical documentation analyst for Julep AI platform. Your task is to analyze documentation content and extract structured information.
+      
+      Julep Core Concepts (this is a list of concepts to give you an idea of the context of the documentation):
+      - Agents: AI orchestrators backed by foundation models (GPT-4, Claude)
+      - Users: Scoped to sessions and memories, hold metadata
+      - Sessions: Facilitate interactions between users and agents, maintain context
+      - Tasks: Multi-step workflows with decision-making, loops, parallel processing
+      - Tools: Programmatic interfaces for external API integration
+      - Documents: RAG content indexed in vector database
+      - Workflows: Task execution logic with various step types
+      - API Endpoints: REST API for managing all components
+      Return ONLY raw JSON without markdown code blocks.
+      <task>
+      Analyze the documentation content and extract:
+      - primary_concepts: Which Julep concepts does this content cover?
+      - content_type: (tutorial, api_reference, concept_explanation, guide, example, quickstart, troubleshooting, etc.)
+      - key_topics: Main topics discussed
+      - code_examples: Whether it contains code examples (true/false)
+      - use_cases: Practical applications mentioned
+      
+      Return ONLY raw JSON without markdown code blocks, using these exact fields.
+      </task>
+      
+  - role: user
+    content: |-
+      $ f"""
+      <documentation_url>
+      {steps[0].input.page_url}
+      </documentation_url>
+      
+      <documentation_content>
+      {steps[0].input.page_content}
+      </documentation_content>
+      """
+  
+  unwrap: true
+
+# Step #1 - Extract and categorize code examples
+- prompt:
+  - role: system
+    content: |-
+      You are a code extraction specialist. Extract all code examples from the documentation content.
+      
+      For each code example found, identify:
+      - language: The programming language (python, javascript, yaml, bash, etc.)
+      - code: The actual code content
+      - purpose: What this code demonstrates
+      - context: Brief explanation of when to use this code
+      
+      Return ONLY raw JSON without markdown code blocks:
+      {{{
+        "code_examples": [
+          {{{
+            "language": "python",
+            "code": "actual code here",
+            "purpose": "Creates a new agent",
+            "context": "Use this when you need to create an agent with the Python SDK"
+          }}}
+        ]
+      }}}
+      
+  - role: user
+    content: |-
+      $ f"""
+      <documentation_content>
+      {steps[0].input.page_content}
+      </documentation_content>
+      """
+  
+  unwrap: true
+
+# Step #2 - Extract analysis and code results
+- evaluate:
+    doc_analysis: $ extract_json(steps[0].output)
+    extracted_codes: $ extract_json(_)
+
+# Step #3 - Process each chunk with enhanced contextualization
+- over: $ steps[0].input.chunked
+  parallelism: 3
+  map:
+    # Generate Q&As and enhanced context for each chunk
+    prompt:
+    - role: system
+      content: |-
+        You are a Julep documentation expert creating enhanced, searchable content for RAG retrieval.
+        
+        Your task:
+        1. Generate 3-5 relevant questions users might ask about this documentation chunk
+        2. Provide clear, concise answers based on the content
+        3. Add contextual information to improve search retrieval
+        4. Rewrite the content as structured, searchable points
+        5. Extract and preserve any code examples with explanations
+        
+        Focus on:
+        - Practical implementation details
+        - Code examples and their usage
+        - Integration patterns
+        - Troubleshooting scenarios
+        - Best practices
+        
+        Return ONLY raw JSON without markdown code blocks:
+        {{{
+          "questions_and_answers": [
+            {{{"question": "the question", "answer": "the answer"}}},
+            etc
+          ],
+          "searchable_content": "Structured points optimized for search",
+          "key_concepts": ["concept1", "concept2", ...]
+        }}}
+        Return ONLY raw JSON without markdown code blocks
+        
+    - role: user
+      content: |-
+        $ f"""
+        <document_metadata>
+        URL: {steps[0].input.page_url}
+        Type: {steps[2].output.doc_analysis.get('content_type', 'documentation')}
+        Concepts: {', '.join(steps[2].output.doc_analysis.get('primary_concepts', []))}
+        </document_metadata>
+        
+        <documentation_chunk>
+        {_}
+        </documentation_chunk>
+        
+        <full_document_context>
+        {steps[0].input.page_content}
+        </full_document_context>
+        """
+    
+    unwrap: true
+
+# Step #4 - Extract enhanced content from each chunk
+- evaluate:
+    enhanced_chunks: $ [extract_json(response) for response in _]
+
+# Step #5 - Create comprehensive searchable documents
+- over: $ _["enhanced_chunks"]
+  parallelism: 3
+  map:
+    # Create final document with all enhancements
+    evaluate:
+      final_content: |
+        $ f"""
+        # Documentation: {steps[0].input.page_url}
+        
+        ## Key Concepts  
+        {', '.join(_.get('key_concepts', []))}
+        
+        ## Content
+        {_.get('searchable_content', '')}
+        
+        ## Questions and Answers
+        {_.get('questions_and_answers', [])}
+        
+        ## Code Examples
+        {steps[2].output.extracted_codes.get('code_examples', [])}
+        """
+
+# Step #6 - Create agent documents with enhanced content
+- over: $ _
+  parallelism: 3
+  map:
+    tool: create_agent_doc
+    arguments:
+      agent_id: $ str(agent.id)
+      data:
+        metadata:
+          source: "spider_crawler"
+          url: $ steps[0].input.page_url
+          content_type: $ steps[2].output.doc_analysis.get('content_type', 'documentation')
+          concepts: $ steps[2].output.doc_analysis.get('primary_concepts', [])
+          has_code: $ steps[2].output.doc_analysis.get('code_examples', False)
+          code_count: $ len(steps[2].output.extracted_codes.get('code_examples', []))
+          key_topics: $ steps[2].output.doc_analysis.get('key_topics', [])
+          crawl_timestamp: $ datetime.datetime.now().isoformat()
+        title: $ f'Julep Documentation - {steps[0].input.page_url}'
+        content: $ _["final_content"]
+
+########################################################
+################### MAIN WORKFLOW ######################
+########################################################
+
+main:
+
+# Step 0: Crawl the Julep documentation using Spider (will crawl multiple pages)
+- tool: spider_crawler
+  arguments:
+    url: $ _['url']
+    params:
+      request: smart_mode
+      limit: 2
+      return_format: markdown
+      proxy_enabled: $ True
+      filter_output_images: $ True
+      filter_output_svg: $ True
+      readability: $ True
+
+# Step 1: Process each crawled page individually
+- over: $ [page for page in _.result if page.status == 200 and page.content]
+  parallelism: 5
+  map:
+    workflow: process_single_page
+    arguments:
+      url: $ _.url
+      content: $ _.content
