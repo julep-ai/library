@@ -23,7 +23,7 @@ tools:
   integration:
     provider: spider
     setup:
-      spider_api_key: "DEMO_API_KEY"
+      spider_api_key: $ {secrets.SPIDER_API_KEY}
 
 ################################################################################
 ############################# MAIN WORKFLOW ####################################

@@ -30,9 +30,9 @@ tools:
     provider: cloudinary
     method: media_upload
     setup:
-      cloudinary_api_key: "DEMO_API_KEY"
-      cloudinary_api_secret: "DEMO_API_SECRET"
-      cloudinary_cloud_name: "DEMO_CLOUD_NAME"
+      cloudinary_api_key: $ {secrets.CLOUDINARY_API_KEY}
+      cloudinary_api_secret: $ {secrets.CLOUDINARY_API_SECRET}
+      cloudinary_cloud_name: $ {secrets.CLOUDINARY_CLOUD_NAME}
 
 ################################################################################
 ############################# MAIN WORKFLOW ####################################

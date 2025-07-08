@@ -33,9 +33,9 @@ tools:
     provider: email
     setup:
       host: smtp.mailgun.org
-      password: "DEMO_PASSWORD" 
+      password: $ {secrets.MAILGUN_PASSWORD}
       port: 587
-      user: postmaster@email.julep.ai
+      user: $ {secrets.MAILGUN_USER}
 
 - name: search_docs
   type: system

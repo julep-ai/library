@@ -24,8 +24,8 @@ tools:
     method: GET
     url: "https://instagram-scraper-api2.p.rapidapi.com/v1/hashtag"
     headers: 
-      x-rapidapi-key: "RAPID_API_KEY"
-      x-rapidapi-host: "RAPID_API_HOST"
+      x-rapidapi-key: $ {secrets.RAPID_API_KEY}
+      x-rapidapi-host: $ {secrets.RAPID_API_HOST}
     follow_redirects: true
 
 - name: get_page
@@ -40,7 +40,7 @@ tools:
       x-with-links-summary: "true"
       x-retain-images: none
       x-no-cache: "true"
-      Authorization: "Bearer JINA_API_KEY"
+      Authorization: $ "Bearer " + {secrets.JINA_API_KEY}
 
 - name: get_replicate_model
   type: api_call
@@ -50,7 +50,7 @@ tools:
     headers:
       Content-Type: application/json
       Prefer: wait
-      Authorization: "Bearer REPLICATE_API_KEY"
+      Authorization: $ "Bearer " + {secrets.REPLICATE_API_KEY}
 
 - name: get_replicate_url
   type: api_call
@@ -60,7 +60,7 @@ tools:
     headers:
       Content-Type: application/json
       Prefer: wait
-      Authorization: "Bearer REPLICATE_API_KEY"
+      Authorization: $ "Bearer " + {secrets.REPLICATE_API_KEY}
 
 - name: get_hooks_doc
   type: system
@@ -76,7 +76,7 @@ tools:
     url: "https://api.shotstack.io/edit/stage/render"
     headers:
       content-type: application/json
-      x-api-key: "SHOTSTACK_API_KEY"
+      x-api-key: $ {secrets.SHOTSTACK_API_KEY}
 
 - name: get_reel_url
   type: api_call
@@ -85,7 +85,7 @@ tools:
     url: "https://api.shotstack.io/edit/stage/render"
     headers:
       content-type: application/json
-      x-api-key: "SHOTSTACK_API_KEY"
+      x-api-key: $ {secrets.SHOTSTACK_API_KEY}
 
 ########################################################
 ########## SUB WORKFLOW TO CREATE REEL #################
