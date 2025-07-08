@@ -23,7 +23,7 @@ tools:
   integration:
     provider: spider
     setup:
-      spider_api_key: {spider_api_key}
+      spider_api_key: $ {secrets.SPIDER_API_KEY}
 
 # tool to create a document for the agent
 - name: create_agent_doc

@@ -24,7 +24,7 @@ tools:
     method: GET 
     url: "https://instagram-scraper-api2.p.rapidapi.com/v1/hashtag"
     headers:
-      x-rapidapi-key: "2d112f8d17msha0aae074c5b5c63p14fc61jsn2a7e5a20d48f"
+      x-rapidapi-key: $ {secrets.RAPID_API_KEY}
       x-rapidapi-host: "instagram-scraper-api2.p.rapidapi.com"
     follow_redirects: true
 
