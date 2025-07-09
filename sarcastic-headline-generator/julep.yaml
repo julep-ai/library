@@ -1,6 +1,10 @@
 name: "Sarcastic Headline Generator"
 description: "Creates witty and sarcastic headlines for any topic by gathering context through web search and applying humor techniques"
 
+secrets:
+  - name: BRAVE_API_KEY
+    link: "https://brave.com/search/api/"
+
 agents:
 - definition: "src/agents/sarcastic-headline-generator-agent.yaml"
 

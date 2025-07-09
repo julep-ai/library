@@ -1,6 +1,10 @@
 name: "Website Crawler"
 description: "Performs automated web crawling and content summarization using Spider API integration for efficient content extraction"
 
+secrets:
+  - name: SPIDER_API_KEY
+    link: "https://spider.cloud"
+
 agents:
 - definition: "src/agents/website-crawler-spider-agent.yaml"
 

@@ -1,6 +1,10 @@
 name: "Documentation Customer Support"
 description: "An intelligent AI support assistant built with the Julep platform to help developers understand and use Julep effectively"
 
+secrets:
+  - name: SPIDER_API_KEY
+    link: "https://spider.cloud"
+
 agents:
 - definition: "src/agents/documentation-customer-support-agent.yaml"
 

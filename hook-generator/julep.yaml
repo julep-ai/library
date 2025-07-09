@@ -1,6 +1,10 @@
 name: "Hook Generator"
 description: "Generates engaging hooks for trending social media reels by analyzing Instagram content and applying proven hook templates"
 
+secrets:
+  - name: RAPID_API_KEY
+    link: "https://rapidapi.com"
+
 agents:
 - definition: "src/agents/hook-generator-agent.yaml"
 

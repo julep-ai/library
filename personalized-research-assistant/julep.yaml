@@ -1,6 +1,12 @@
 name: "Personalized Research Assistant"
 description: "Recommends research papers tailored to individual user personas by leveraging news search, ArXiv integration, and document parsing"
 
+secrets:
+  - name: BRAVE_API_KEY
+    link: "https://brave.com/search/api/"
+  - name: LLAMAPARSE_API_KEY
+    link: "https://docs.llamaindex.ai/en/stable/llama_cloud/llama_parse/"
+
 agents:
 - definition: "src/agents/personalized-research-assistant-agent.yaml"
 

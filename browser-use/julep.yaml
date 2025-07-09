@@ -1,6 +1,12 @@
 name: "Browser Use"
 description: "Enables headless browser automation for web interactions and tasks using Chrome DevTools Protocol with Browserbase integration"
 
+secrets:
+  - name: BROWSERBASE_API_KEY
+    link: "https://browserbase.com"
+  - name: BROWSERBASE_PROJECT_ID
+    link: "https://browserbase.com"
+
 agents:
 - definition: "src/agents/browser-agent.yaml"
 

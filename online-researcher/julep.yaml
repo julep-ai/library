@@ -1,6 +1,10 @@
 name: "Online Researcher"
 description: "Performs intelligent research on trending topics using web search and keyword extraction with parallel processing capabilities"
 
+secrets:
+  - name: BRAVE_API_KEY
+    link: "https://brave.com/search/api/"
+
 agents:
 - definition: "src/agents/online-researcher-agent.yaml"
 

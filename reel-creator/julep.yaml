@@ -1,6 +1,18 @@
 name: "Reel Creator"
 description: "Generates viral social media reels by analyzing trending Instagram content and creating engaging video content with automated scripts, images, and audio"
 
+secrets:
+  - name: RAPID_API_KEY
+    link: "https://rapidapi.com"
+  - name: RAPID_API_HOST
+    link: "https://rapidapi.com"
+  - name: JINA_API_KEY
+    link: "https://jina.ai"
+  - name: REPLICATE_API_KEY
+    link: "https://replicate.com"
+  - name: SHOTSTACK_API_KEY
+    link: "https://shotstack.com"
+
 agents:
 - definition: "src/agents/reel-creator-agent.yaml"
 
