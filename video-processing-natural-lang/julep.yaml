@@ -1,6 +1,14 @@
 name: "Video Processing with Natural Language"
 description: "Processes videos using natural language prompts by uploading to Cloudinary and generating AI-powered transformations with Gemini 1.5 Pro"
 
+secrets:
+  - name: CLOUDINARY_API_KEY
+    link: "https://cloudinary.com"
+  - name: CLOUDINARY_API_SECRET
+    link: "https://cloudinary.com"
+  - name: CLOUDINARY_CLOUD_NAME
+    link: "https://cloudinary.com"
+
 agents:
 - definition: "src/agents/video-processing-natural-lang-agent.yaml"
 

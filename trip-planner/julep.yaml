@@ -1,9 +1,15 @@
 name: "Trip Planner"
 description: "Generates detailed travel itineraries incorporating weather conditions and tourist attractions for multiple locations with parallel processing"
 
+secrets:
+  - name: OPENWEATHERMAP_API_KEY
+    link: "https://openweathermap.org/api"
+  - name: BRAVE_API_KEY
+    link: "https://brave.com/search/api/"
+
 agents:
 - definition: "src/agents/trip-planner-agent.yaml"
 
 tasks:
 - agent_id: "{agents[0].id}"
-  definition: "src/tasks/trip-planner-task.yaml" 
+  definition: "src/tasks/trip-planner-task.yaml"

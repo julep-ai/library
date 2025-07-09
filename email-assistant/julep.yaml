@@ -1,6 +1,12 @@
 name: "Email Assistant"
 description: "Automates email response management by searching documentation and generating contextual replies using Mailgun integration"
 
+secrets:
+  - name: MAILGUN_PASSWORD
+    link: "https://mailgun.com"
+  - name: MAILGUN_USER
+    link: "https://mailgun.com"
+
 agents:
 - definition: "src/agents/email-assistant-agent.yaml"
 

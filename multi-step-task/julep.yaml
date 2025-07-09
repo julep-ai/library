@@ -1,6 +1,10 @@
 name: "Multi-Step Task"
 description: "Demonstrates structured research and information synthesis through multi-step web search and summarization processes"
 
+secrets:
+  - name: BRAVE_API_KEY
+    link: "https://brave.com/search/api/"
+
 agents:
 - definition: "src/agents/multi-step-agent.yaml"
 
