@@ -1,0 +1,19 @@
+name: "Hacker News Newsletter"
+description: |-
+  Get a personalized daily or weekly newsletter featuring the most trending Hacker News stories, tailored to your interests and delivered with AI-powered summaries.
+
+  This newsletter bot automatically:
+  • Scrapes the top 40 trending stories from Hacker News every day
+  • Filters content based on your specific technology interests and preferences
+  • Generates concise, insightful summaries for each relevant article
+  • Creates a beautifully formatted newsletter with your personalized selection
+  • Delivers it to your inbox on your preferred schedule (daily or weekly)
+
+  Simply provide your email address and select your areas of interest - whether it's AI/ML, web development, startups, cybersecurity, or any other tech topics. The AI will learn your preferences over time and continuously improve your personalized newsletter to show the most relevant content.
+
+Key features: |-
+  • Real-time scraping of top 40 HN stories based on points and engagement
+  • Smart filtering based on your technology preferences and interests
+  • AI-generated summaries that capture key insights from each article
+  • Customizable delivery schedule - daily or weekly emails
+  • Preference learning that improves recommendations over time

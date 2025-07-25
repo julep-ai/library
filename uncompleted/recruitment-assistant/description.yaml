@@ -1,0 +1,19 @@
+name: "Recruitment Assistant"
+description: |-
+  Streamline your hiring process with an AI recruiter that finds, evaluates, and schedules interviews with top candidates automatically.
+
+  This hiring assistant transforms how you recruit by:
+  • Analyzing resumes against your specific hiring criteria and company culture
+  • Scoring and ranking candidates based on skills, experience, and potential fit
+  • Automatically scheduling interviews
+  • Generating personalized interview questions for each candidate
+  • Providing detailed insights and recommendations for hiring decisions
+
+  Simply provide your hiring criteria, upload candidate resumes, specify the number of interviews needed, and your preferred time slots. The AI will handle the entire screening and scheduling process, ensuring you only spend time with the most qualified candidates.
+
+Key features: |-
+  • Advanced resume parsing and skill extraction
+  • Objective scoring based on your custom criteria
+  • Automated calendar integration and interview scheduling
+  • Personalized interview questions based on each candidate's background
+  • Bias reduction through standardized evaluation processes

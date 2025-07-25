@@ -1,0 +1,20 @@
+name: "GitHub Trending Newsletter"
+description: |-
+  Stay ahead of the curve with a personalized newsletter featuring trending GitHub repositories and new releases tailored to your programming interests.
+
+  This newsletter bot automatically:
+  • Monitors GitHub's trending repositories across all programming languages daily
+  • Tracks new releases from repositories you star or watch
+  • Filters projects based on your language preferences and development interests
+  • Analyzes repository documentation to provide meaningful project summaries
+  • Sends you a newsletter with star counts, growth stats, and key features
+
+  Set your programming language preferences, specify topics of interest (like machine learning, web frameworks, or DevOps tools), and choose your delivery schedule. The AI will find the most relevant trending projects and important releases from the repositories you follow.
+
+
+Key features: |-
+  • Daily scanning of GitHub trending repositories across 50+ languages
+  • New release notifications from watched/starred repositories
+  • Project summaries with key features and use cases explained
+  • Growth metrics showing star velocity and community engagement
+  • Customizable filters for languages, topics, and minimum star thresholds
