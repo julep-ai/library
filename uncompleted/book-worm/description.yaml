@@ -1,0 +1,19 @@
+name: "AI Educational Tutor"
+description: |-
+  Transform any textbook or study material into an interactive AI tutor that adapts to your learning style.
+
+  This study assistant helps students study by:
+  • Creating personalized quizzes and practice exams from your course materials
+  • Explaining difficult concepts in multiple ways until you understand
+  • Generating exam-style questions that match your actual test format
+  • Tracking your progress and focusing on areas that need improvement
+  • Providing instant feedback on your answers with detailed explanations
+
+  Simply upload your textbook PDF or provide a link to your study materials, and optionally include a sample exam to match the question style. The AI will analyze the content, create a comprehensive knowledge base, and become your 24/7 study companion.
+
+Key features: |-
+  • Multiple question formats: multiple choice, true/false, fill-in-the-blank, and short answer
+  • Adaptive difficulty levels that adjust to your performance
+  • Mock exams that simulate real test conditions
+  • Interactive Q&A sessions for deeper understanding
+  • Progress tracking to identify knowledge gaps
