@@ -1,0 +1,20 @@
+name: AI Agent Performance Optimizer
+
+description: |-
+  Maximize the reliability and effectiveness of your AI agents with an intelligent monitoring system that automatically identifies issues and implements improvements. This meta-AI system acts as a quality assurance engineer for your AI workflows, ensuring consistent high performance.
+
+  This performance optimizer automatically:
+  • Logs and analyzes every AI agent interaction and outcome
+  • Identifies patterns in failures and degraded performance
+  • Suggests prompt improvements and workflow optimizations
+  • A/B tests different approaches to find what works best
+  • Generates performance reports with actionable insights
+
+  Simply integrate with your existing AI workflows using minimal code changes. The system captures comprehensive logs of agent behaviors, analyzes success patterns, and learns what causes failures. It can automatically adjust prompts, fine-tune parameters, and even suggest architectural changes. Watch your agent success rates climb from 70% to 95%+ as the optimizer learns and adapts to your specific use cases.
+
+key_features: |-
+  • Universal compatibility: Works with OpenAI, Claude, Gemini, and open-source models
+  • Real-time monitoring: Live dashboard showing agent performance metrics
+  • Automatic optimization: Self-improving prompts based on outcome analysis
+  • Cost tracking: Monitors token usage and suggests efficiency improvements
+  • Regression detection: Alerts when updates degrade agent performance

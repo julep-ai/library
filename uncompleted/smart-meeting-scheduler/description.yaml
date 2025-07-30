@@ -1,0 +1,20 @@
+name: Smart Meeting Scheduler
+
+description: |-
+  Eliminate the back-and-forth of scheduling meetings with an AI assistant that understands context, priorities, and the nuances of professional calendaring. This intelligent scheduler acts as your personal scheduling assistant, handling everything from simple 1:1s to complex multi-stakeholder meetings.
+
+  This scheduling assistant automatically:
+  • Parses natural language meeting requests from emails and messages
+  • Finds optimal time slots considering all participants' calendars and preferences
+  • Negotiates scheduling conflicts by understanding meeting priorities
+  • Sends professional invitations with agendas and pre-meeting materials
+  • Handles rescheduling requests and manages recurring meeting series
+
+  Connect your calendar system, email, and communication platforms, then let the AI handle the tedious work of scheduling. It learns from your patterns—understanding when you prefer certain types of meetings, how much buffer time you need, and which meetings can be moved versus which are non-negotiable. The system even factors in timezone differences, travel time between locations, and personal preferences like no-meeting blocks.
+
+key_features: |-
+  • Multi-calendar support: Works with Google Calendar, Outlook, and CalDAV systems
+  • Smart conflict resolution: Suggests alternatives and negotiates with other AI schedulers
+  • Meeting preparation: Automatically creates agendas and shares relevant documents
+  • Travel intelligence: Accounts for commute time between physical meetings
+  • Energy management: Schedules demanding meetings when you're typically most alert

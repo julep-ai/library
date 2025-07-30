@@ -1,0 +1,20 @@
+name: AI Developer Advocate
+
+description: |-
+  Build authentic developer relationships at scale with an AI advocate that understands your technical product and engages meaningfully in developer communities. This intelligent system acts as your always-on developer relations team, finding and nurturing potential users where they naturally gather.
+
+  This developer advocate automatically:
+  • Monitors GitHub, Stack Overflow, Reddit, and Discord for relevant discussions
+  • Provides helpful technical answers that subtly showcase your tool's capabilities
+  • Identifies developers struggling with problems your product solves
+  • Creates technical content like tutorials and code examples
+  • Tracks developer sentiment and surfaces product feedback
+
+  Simply configure your product's technical details, use cases, and target developer profiles. The AI learns your documentation, understands your API, and can write accurate code examples. It engages authentically in technical discussions, helping developers while building awareness of your solution. The system maintains a consistent technical voice, never sounds salesy, and always provides genuine value first—just like the best human developer advocates.
+
+key_features: |-
+  • Multi-platform presence: Active on GitHub, Stack Overflow, Reddit, Discord, and dev forums
+  • Code fluency: Writes working examples in Python, JavaScript, Go, and more
+  • Community insights: Tracks trending topics and emerging developer needs
+  • Content generation: Creates blog posts, tutorials, and documentation improvements
+  • Lead scoring: Identifies high-intent developers ready for direct outreach

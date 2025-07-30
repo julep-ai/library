@@ -1,0 +1,20 @@
+name: Personalized Push Notification Engine
+
+description: |-
+  Transform your product's user engagement with an AI-powered notification system that learns what each user wants to know and when they want to know it. Stop sending generic blasts that get ignored—deliver timely, relevant notifications that users actually appreciate.
+
+  This intelligent engine automatically:
+  • Analyzes user behavior patterns to determine optimal notification timing
+  • Crafts personalized message content based on individual preferences and history
+  • Segments users dynamically based on engagement levels and interests
+  • A/B tests notification strategies to maximize open rates
+  • Manages notification fatigue by intelligently batching and prioritizing messages
+
+  Simply integrate your product analytics, user database, and push notification service. The system continuously learns from user interactions, adjusting its strategy for each individual. It monitors engagement metrics, tracks conversion events, and automatically optimizes delivery times based on when users are most active. Whether you're promoting new features, sharing updates, or re-engaging dormant users, each notification is carefully crafted and timed for maximum impact.
+
+key_features: |-
+  • Multi-channel support: Push notifications, in-app messages, and email in a unified workflow
+  • Smart batching: Groups related notifications to reduce interruption fatigue
+  • Timezone-aware delivery: Sends notifications at locally optimal times for global users
+  • Rich analytics dashboard: Track CTR, conversion rates, and user sentiment per notification type
+  • Compliance-ready: Built-in preference management and unsubscribe handling for GDPR/CCPA
