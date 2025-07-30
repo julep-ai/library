@@ -1,0 +1,20 @@
+name: AI Code Review Assistant
+
+description: |-
+  Enhance your development workflow with an AI-powered code reviewer that provides instant, comprehensive feedback on every pull request. This intelligent assistant acts like a senior developer on your team, catching bugs, suggesting improvements, and ensuring code quality 24/7.
+
+  This code review assistant automatically:
+  • Analyzes code changes for bugs, security vulnerabilities, and performance issues
+  • Checks adherence to your team's coding standards and best practices
+  • Suggests refactoring opportunities and cleaner implementations
+  • Identifies potential edge cases and missing test coverage
+  • Provides educational feedback to help developers learn and improve
+
+  Integrate with your GitHub, GitLab, or Bitbucket repositories and customize the review criteria to match your team's standards. The AI learns from your codebase patterns, understanding your architecture and conventions. It provides contextual feedback that goes beyond simple linting—examining logic flows, spotting race conditions, and even suggesting more idiomatic approaches specific to your tech stack.
+
+key_features: |-
+  • Multi-language support: JavaScript, Python, Java, Go, Rust, and more
+  • Security-first: Detects OWASP Top 10 vulnerabilities and security anti-patterns
+  • Learning system: Adapts to your team's code style from accepted/rejected suggestions
+  • PR automation: Auto-approves simple changes, requests reviews for complex ones
+  • Knowledge sharing: Links to relevant documentation and similar past implementations

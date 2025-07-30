@@ -1,0 +1,20 @@
+name: Customer Feedback Intelligence System
+
+description: |-
+  Transform overwhelming customer feedback into actionable insights with an AI system that continuously analyzes, categorizes, and prioritizes feedback from all channels. This intelligent analyzer helps product teams make data-driven decisions by surfacing what customers really want and need.
+
+  This feedback analyzer automatically:
+  • Aggregates feedback from reviews, support tickets, surveys, and social media
+  • Identifies recurring themes and emerging issues using semantic analysis
+  • Quantifies sentiment trends and tracks satisfaction metrics over time
+  • Prioritizes feature requests based on frequency and business impact
+  • Generates executive summaries with actionable recommendations
+
+  Connect your feedback sources—app stores, support systems, survey tools, and social platforms—and let the AI do the heavy lifting of analysis. It understands context and nuance, distinguishing between minor annoyances and critical issues. The system learns your product's feature set and can accurately categorize feedback, track the impact of changes, and predict which improvements will have the greatest effect on customer satisfaction.
+
+key_features: |-
+  • Multilingual support: Analyzes feedback in 50+ languages with cultural context
+  • Root cause analysis: Identifies underlying issues behind surface complaints
+  • Competitive insights: Compares your feedback trends with industry benchmarks
+  • Automated alerts: Notifies teams of critical issues or sentiment shifts
+  • Impact prediction: Estimates satisfaction improvement from addressing specific feedback
