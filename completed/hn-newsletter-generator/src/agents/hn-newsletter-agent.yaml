@@ -1,0 +1,3 @@
+name: HN Newsletter Agent
+about: An intelligent agent that curates personalized Hacker News newsletters by fetching top stories, analyzing content relevance, and generating insightful summaries based on user preferences.
+model: gpt-4o

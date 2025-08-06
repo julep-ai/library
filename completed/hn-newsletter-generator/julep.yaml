@@ -1,0 +1,13 @@
+name: "HN Newsletter Generator"
+description: Fetch top Hacker News stories, personalize content based on user preferences, and generate AI-powered summaries
+
+secrets:
+  - name: SPIDER_API_KEY
+    link: "https://spider.cloud"
+
+agents:
+- definition: "src/agents/hn-newsletter-generator-agent.yaml"
+
+tasks:
+- agent_id: "{agents[0].id}"
+  definition: "src/tasks/hn-newsletter-generator-task.yaml"
