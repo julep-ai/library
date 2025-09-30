@@ -6,8 +6,8 @@ secrets:
     link: "https://spider.cloud"
 
 agents:
-- definition: "src/agents/hn-newsletter-generator-agent.yaml"
+- definition: "src/agents/hn-newsletter-agent.yaml"
 
 tasks:
 - agent_id: "{agents[0].id}"
-  definition: "src/tasks/hn-newsletter-generator-task.yaml"
+  definition: "src/tasks/hn-newsletter-task.yaml"
